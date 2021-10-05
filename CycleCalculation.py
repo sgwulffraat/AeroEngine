@@ -70,7 +70,10 @@ m_dot_bypass = m_dot_core * BPR
 ### Fan conditions ###
 p_t21 = p_t2 * PR_fan
 T_t21 = isentropcomp_T(T_t, n_is_fan, p_t2, p_t21, k_a)
-W_req_fan = m_dot*c_p_a*(T_t21-T_t)
+W_req_fan = 0.85 * m_dot*c_p_a*(T_t21-T_t)
+
+### Battery conditions ###
+W_req_fan_bat = 0.15 * m_dot*c_p_a*(T_t21-T_t)
 
 ### LPC conditions ###
 p_t25 = PR_LPC * p_t21
@@ -201,96 +204,96 @@ print("Combined efficiencies prop check =", n_gas*n_thdy*n_comb*n_prop)
 
 
 
-###### T-s plot ######
-
-air = pm.get('ig.air')
-pm.config['unit_pressure'] = 'Pa'
-pm.config['unit_energy'] = 'J'
-
-
-## ideal cycle ##
-PR_tot = PR_fan*PR_HPC*PR_LPC*PR_intake
-p1 = p_t
-T1 = T_t
-s1 = air.s(T1, p1)
-p2 = p1*PR_tot
-T2 = air.T_s(s=s1, p=p2)
-T3 = T_combexit
-p3 = p2
-s3 = air.s(T3, p3)
-s4 = s3
-p4 = p1
-T4 = air.T_s(s=s4, p=p4)
-
-plt.figure()
-plt.plot([s1, s1], [T1, T2], 'r', linewidth=1)
-T = np.linspace(T2, T3, 20)
-plt.plot(air.s(T=T, p=p2), T, 'r', linewidth=1)
-plt.plot([s3, s3], [T3, T4], 'r', linewidth=1)
-T = np.linspace(T1, T4, 20)
-plt.plot(air.s(T=T, p=p1), T, 'r--', linewidth=1)
-
-#points
-plt.plot(s1, T2, 'ro', markersize=3)
-plt.plot(s3, T3, 'ro', markersize=3)
-plt.plot(s4, T4, 'ro', markersize=3)
-plt.annotate("3'", (s1, T2), textcoords="offset points", xytext=(-5, 0), ha='right')
-plt.annotate("4'", (s3, T3), textcoords="offset points", xytext=(-5, 0), ha='right')
-plt.annotate("8'", (s4, T4), textcoords="offset points", xytext=(5, 5), ha='left')
-
-## real cycle ##
-st = air.s(T_t, p_t)             #c_p_a*np.log(T_t/T_a) - R*np.log(p_t/p_a)
-s2 = air.s(T_t, p_t2)            #c_p_a*np.log(T_t/T_t) - R*np.log(p_t2/p_t) + st
-s21 = air.s(T_t21, p_t21)        #c_p_a*np.log(T_t21/T_t) - R*np.log(p_t21/p_t2) + s2
-s25 = air.s(T_t25, p_t25)        #c_p_a*np.log(T_t25/T_t21) - R*np.log(p_t25/p_t21) + s21
-s3 = air.s(T_t3, p_t3)           #c_p_a*np.log(T_t3/T_t25) - R*np.log(p_t3/p_t25) + s25
-s4 = air.s(T_combexit, p_t4)     #c_p_g*np.log(T_combexit/T_t3) - R*np.log(p_t4/p_t3) + s3
-s45 = air.s(T_t45, p_t45)        #c_p_g*np.log(T_t45/T_combexit) - R*np.log(p_t45/p_t4) + s4
-s5 = air.s(T_t5, p_t5)           #c_p_g*np.log(T_t5/T_t45) - R*np.log(p_t5/p_t45) + s45
-sgg = air.s(T_gg, p_gg) + 5.795
-s7 = s5
-s8 = air.s(T_8, p_8)             #c_p_g*np.log(T_8/T_t5) - R*np.log(p_8/p_t5) + s7
-
-plt.plot([st, s2], [T_t, T_t], 'b', linewidth=1)
-plt.plot([s21, s2], [T_t21, T_t], 'b', linewidth=1)
-plt.plot([s25, s21], [T_t25, T_t21], 'b', linewidth=1)
-plt.plot([s3, s25], [T_t3, T_t25], 'b', linewidth=1)
-T = np.linspace(T_t3, T_combexit, 20)
-p = np.linspace(p_t3, p_t4, 20)
-plt.plot(air.s(T=T, p=p), T, 'b', linewidth=1)
-plt.plot([s45, s4], [T_t45, T_combexit], 'b', linewidth=1)
-plt.plot([s5, s45], [T_t5, T_t45], 'b', linewidth=1)
-plt.plot([s8, s7], [T_8, T_t5], 'b', linewidth=1)
-T = np.linspace(T_t, T_8, 20)
-p = np.linspace(p_t, p_8, 20)
-plt.plot(air.s(T=T, p=p), T, 'b--', linewidth=1)
-
-#points
-plt.plot(st, T_t, 'bo', markersize=3)
-plt.annotate(0, (st, T_t), textcoords="offset points", xytext=(-5, -5), ha='right')
-plt.plot(s21, T_t21, 'bo', markersize=3)
-plt.annotate(21, (s21, T_t21), textcoords="offset points", xytext=(-5, 0), ha='right')
-plt.plot(s25, T_t25, 'bo', markersize=3)
-plt.annotate(25, (s25, T_t25), textcoords="offset points", xytext=(5, 0), ha='left')
-plt.plot(s3, T_t3, 'bo', markersize=3)
-plt.annotate(3, (s3, T_t3), textcoords="offset points", xytext=(-5, 0), ha='right')
-plt.plot(s4, T_combexit, 'bo', markersize=3)
-plt.annotate(4, (s4, T_combexit), textcoords="offset points", xytext=(5, 0), ha='left')
-plt.plot(s45, T_t45, 'bo', markersize=3)
-plt.annotate(45, (s45, T_t45), textcoords="offset points", xytext=(5, 0), ha='left')
-plt.plot(sgg, T_gg, 'bo', markersize=3)
-plt.annotate("gg", (sgg, T_gg), textcoords="offset points", xytext=(5, 0), ha='left')
-plt.plot(s5, T_t5, 'bo', markersize=3)
-plt.annotate("5,7", (s5, T_t5), textcoords="offset points", xytext=(5, 0), ha='left')
-plt.plot(s8, T_8, 'bo', markersize=3)
-plt.annotate(8, (s8, T_8), textcoords="offset points", xytext=(5, 0), ha='left')
-
-
-## plot ##
-ax = plt.gca()
-ax.set_ylim([200, 1500])
-plt.xlabel('Entropy, s (J/kg/K)')
-plt.ylabel('Temperature, T (K)')
-plt.grid('on')
-plt.title('LEAP-1A: T-s Diagram')
-plt.show()
+# ###### T-s plot ######
+#
+# air = pm.get('ig.air')
+# pm.config['unit_pressure'] = 'Pa'
+# pm.config['unit_energy'] = 'J'
+#
+#
+# ## ideal cycle ##
+# PR_tot = PR_fan*PR_HPC*PR_LPC*PR_intake
+# p1 = p_t
+# T1 = T_t
+# s1 = air.s(T1, p1)
+# p2 = p1*PR_tot
+# T2 = air.T_s(s=s1, p=p2)
+# T3 = T_combexit
+# p3 = p2
+# s3 = air.s(T3, p3)
+# s4 = s3
+# p4 = p1
+# T4 = air.T_s(s=s4, p=p4)
+#
+# plt.figure()
+# plt.plot([s1, s1], [T1, T2], 'r', linewidth=1)
+# T = np.linspace(T2, T3, 20)
+# plt.plot(air.s(T=T, p=p2), T, 'r', linewidth=1)
+# plt.plot([s3, s3], [T3, T4], 'r', linewidth=1)
+# T = np.linspace(T1, T4, 20)
+# plt.plot(air.s(T=T, p=p1), T, 'r--', linewidth=1)
+#
+# #points
+# plt.plot(s1, T2, 'ro', markersize=3)
+# plt.plot(s3, T3, 'ro', markersize=3)
+# plt.plot(s4, T4, 'ro', markersize=3)
+# plt.annotate("3'", (s1, T2), textcoords="offset points", xytext=(-5, 0), ha='right')
+# plt.annotate("4'", (s3, T3), textcoords="offset points", xytext=(-5, 0), ha='right')
+# plt.annotate("8'", (s4, T4), textcoords="offset points", xytext=(5, 5), ha='left')
+#
+# ## real cycle ##
+# st = air.s(T_t, p_t)             #c_p_a*np.log(T_t/T_a) - R*np.log(p_t/p_a)
+# s2 = air.s(T_t, p_t2)            #c_p_a*np.log(T_t/T_t) - R*np.log(p_t2/p_t) + st
+# s21 = air.s(T_t21, p_t21)        #c_p_a*np.log(T_t21/T_t) - R*np.log(p_t21/p_t2) + s2
+# s25 = air.s(T_t25, p_t25)        #c_p_a*np.log(T_t25/T_t21) - R*np.log(p_t25/p_t21) + s21
+# s3 = air.s(T_t3, p_t3)           #c_p_a*np.log(T_t3/T_t25) - R*np.log(p_t3/p_t25) + s25
+# s4 = air.s(T_combexit, p_t4)     #c_p_g*np.log(T_combexit/T_t3) - R*np.log(p_t4/p_t3) + s3
+# s45 = air.s(T_t45, p_t45)        #c_p_g*np.log(T_t45/T_combexit) - R*np.log(p_t45/p_t4) + s4
+# s5 = air.s(T_t5, p_t5)           #c_p_g*np.log(T_t5/T_t45) - R*np.log(p_t5/p_t45) + s45
+# sgg = air.s(T_gg, p_gg) + 5.795
+# s7 = s5
+# s8 = air.s(T_8, p_8)             #c_p_g*np.log(T_8/T_t5) - R*np.log(p_8/p_t5) + s7
+#
+# plt.plot([st, s2], [T_t, T_t], 'b', linewidth=1)
+# plt.plot([s21, s2], [T_t21, T_t], 'b', linewidth=1)
+# plt.plot([s25, s21], [T_t25, T_t21], 'b', linewidth=1)
+# plt.plot([s3, s25], [T_t3, T_t25], 'b', linewidth=1)
+# T = np.linspace(T_t3, T_combexit, 20)
+# p = np.linspace(p_t3, p_t4, 20)
+# plt.plot(air.s(T=T, p=p), T, 'b', linewidth=1)
+# plt.plot([s45, s4], [T_t45, T_combexit], 'b', linewidth=1)
+# plt.plot([s5, s45], [T_t5, T_t45], 'b', linewidth=1)
+# plt.plot([s8, s7], [T_8, T_t5], 'b', linewidth=1)
+# T = np.linspace(T_t, T_8, 20)
+# p = np.linspace(p_t, p_8, 20)
+# plt.plot(air.s(T=T, p=p), T, 'b--', linewidth=1)
+#
+# #points
+# plt.plot(st, T_t, 'bo', markersize=3)
+# plt.annotate(0, (st, T_t), textcoords="offset points", xytext=(-5, -5), ha='right')
+# plt.plot(s21, T_t21, 'bo', markersize=3)
+# plt.annotate(21, (s21, T_t21), textcoords="offset points", xytext=(-5, 0), ha='right')
+# plt.plot(s25, T_t25, 'bo', markersize=3)
+# plt.annotate(25, (s25, T_t25), textcoords="offset points", xytext=(5, 0), ha='left')
+# plt.plot(s3, T_t3, 'bo', markersize=3)
+# plt.annotate(3, (s3, T_t3), textcoords="offset points", xytext=(-5, 0), ha='right')
+# plt.plot(s4, T_combexit, 'bo', markersize=3)
+# plt.annotate(4, (s4, T_combexit), textcoords="offset points", xytext=(5, 0), ha='left')
+# plt.plot(s45, T_t45, 'bo', markersize=3)
+# plt.annotate(45, (s45, T_t45), textcoords="offset points", xytext=(5, 0), ha='left')
+# plt.plot(sgg, T_gg, 'bo', markersize=3)
+# plt.annotate("gg", (sgg, T_gg), textcoords="offset points", xytext=(5, 0), ha='left')
+# plt.plot(s5, T_t5, 'bo', markersize=3)
+# plt.annotate("5,7", (s5, T_t5), textcoords="offset points", xytext=(5, 0), ha='left')
+# plt.plot(s8, T_8, 'bo', markersize=3)
+# plt.annotate(8, (s8, T_8), textcoords="offset points", xytext=(5, 0), ha='left')
+#
+#
+# ## plot ##
+# ax = plt.gca()
+# ax.set_ylim([200, 1500])
+# plt.xlabel('Entropy, s (J/kg/K)')
+# plt.ylabel('Temperature, T (K)')
+# plt.grid('on')
+# plt.title('LEAP-1A: T-s Diagram')
+# plt.show()
