@@ -153,8 +153,8 @@ for T_combexit in np.linspace(1000, 1600, 10000):
 #battery calculations
 print("The power provided by one battery =",W_req_fan_bat," W")
 
-E_carried = W_req_fan_bat * 2 * 60 * 60 * 3
-print("The total amount of energy carried by the battteries =", E_carried," J")
+E_carried = W_req_fan_bat * 2  * 3 #in Wh
+print("The total amount of energy carried by the battteries =", E_carried," Wh")
 
 # #Propulsive efficiency#
 # n_prop = (m_dot_4*(v_9eff-v_fs)+m_dot_bypass*(v_19eff-v_fs))*v_fs/(((0.5*m_dot_4)*(v_9eff**2-v_fs**2)+(0.5*m_dot_bypass)*(v_19eff**2-v_fs**2)))
