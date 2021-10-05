@@ -80,13 +80,23 @@ p_t3 = p_t25 * PR_HPC
 T_t3 = isentropcomp_T(T_t25, n_is_C, p_t25, p_t3, k_a)
 W_req_HPC = m_dot_core * c_p_a * (T_t3- T_t25)
 
+#battery calculations
+print("The power provided by one battery =",W_req_fan_bat," W")
 
+E_carried = W_req_fan_bat * 2  * 3 #in Wh
+efficiency_pmu = 0.95*0.99*0.995*0.95
+E_carried = (W_req_fan_bat * 2  * 3)/efficiency_pmu #in Wh
+print("The total amount of energy carried by the battteries =", E_carried," Wh")
+Bat_density = 500 #Wh/kg
+Bat_density = 550 #Wh/kg
+Bat_weight = E_carried/Bat_density
+print("The weight of the battery =", Bat_weight, " kg")
+cable_weight = 16 #kg
 
 ## loop ##
 F_Nstart = 17456 #N
 M_fuelstart = 898988 #kg
 
-while
 
     for T_combexit in np.linspace(1000, 1600, 10000):
 
@@ -160,6 +170,7 @@ while
 
     M_fuel = m_dot_f * 3 * 60 * 60 * 2
     M_fuelstart = M_fuel
+
 
 
 #Propulsive efficiency#
