@@ -70,10 +70,11 @@ m_dot_bypass = m_dot_core * BPR
 ### Fan conditions ###
 p_t21 = p_t2 * PR_fan
 T_t21 = isentropcomp_T(T_t, n_is_fan, p_t2, p_t21, k_a)
-W_req_fan = 0.85 * m_dot*c_p_a*(T_t21-T_t)
+W_req_fan = m_dot*c_p_a*(T_t21-T_t)
 
 ### Battery conditions ###
-W_req_fan_bat = 0.15 * m_dot*c_p_a*(T_t21-T_t)
+W_req_fan_bat = 0.15 * W_req_fan
+print("Battery power =", W_req_fan_bat)
 
 ### LPC conditions ###
 p_t25 = PR_LPC * p_t21
@@ -95,9 +96,9 @@ T_t45 = T_combexit - (W_req_HPC / (n_mech * m_dot_4 * c_p_g))
 p_t45 = p_t4*(1 - 1/n_is_T*(1- T_t45/T_combexit)) ** (k_g/(k_g - 1))
 
 ### LPT conditions ###
-T_gg = T_t45 - ((W_req_LPC + 1/(BPR+1)*W_req_fan) / (n_mech * m_dot_4 * c_p_g))
+T_gg = T_t45 - ((W_req_LPC + 1/(BPR+1)* W_req_fan) / (n_mech * m_dot_4 * c_p_g))
 p_gg = p_t45 * (1 - 1/n_is_T*(1- T_gg/T_t45)) ** (k_g/(k_g - 1))
-T_t5 = T_t45 - ((W_req_LPC + W_req_fan) / (n_mech * m_dot_4 * c_p_g))
+T_t5 = T_t45 - ((W_req_LPC +  W_req_fan) / (n_mech * m_dot_4 * c_p_g))
 p_t5 = p_t45 * (1 - 1/n_is_T*(1- T_t5/T_t45)) ** (k_g/(k_g - 1))
 
 
