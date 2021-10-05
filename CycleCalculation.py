@@ -151,7 +151,8 @@ else:
 F_N = F_core + F_bypass
 TSFC = m_dot_f/F_N *1000000 #g/kN.S
 
-
+M_fuel = m_dot_f * 3 * 60 * 60 * 2
+print("fuel mass = ", M_fuel)
 
 #Propulsive efficiency#
 n_prop = (m_dot_4*(v_9eff-v_fs)+m_dot_bypass*(v_19eff-v_fs))*v_fs/(((0.5*m_dot_4)*(v_9eff**2-v_fs**2)+(0.5*m_dot_bypass)*(v_19eff**2-v_fs**2)))

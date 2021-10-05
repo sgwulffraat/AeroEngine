@@ -95,12 +95,17 @@ cable_weight = 16 #kg
 motor_weight = (W_req_fan_bat/1000)/10
 pmu_weight = Bat_weight+cable_weight+motor_weight
 
+
 ## loop ##
-F_Nstart = 17456 #N
-M_fuelstart = 898988 #kg
-
-
-    for T_combexit in np.linspace(1000, 1600, 10000):
+F_Nstart = 17656.45 #N
+M_fuelstart = 5476.52 #kg
+M_empty = 68000 - 5476.52 + cable_weight
+LD = 17
+i = 0
+while i < 30:
+    print("i =", i)
+    print("F_Nstart = ", F_Nstart)
+    for T_combexit in np.linspace(800, 1700, 10000):
 
         ### Combustion conditions ###
         m_dot_f = (m_dot_core * c_p_g * (T_combexit - T_t3)) / (n_comb * LHV *10**6)
@@ -171,11 +176,27 @@ M_fuelstart = 898988 #kg
             break
 
     M_fuel = m_dot_f * 3 * 60 * 60 * 2
+    print("F_n = ", F_N)
+    print("M_fuel =", M_fuel)
+    M_total = M_empty + M_fuel
+    F_Nstart = (M_total * 9.81 / LD) / 2
     M_fuelstart = M_fuel
 
 
+    if F_N > F_Nstart*0.999 and F_N < F_Nstart*1.001:
+        print()
+        print(" ##### Loop completed in ", i, "iterations #####")
+        print()
+        print("M_total = ", M_total, "kg")
+        print("F_N = ", F_Nstart, "N")
+        print("TSFC = ", TSFC, "g/kN.S")
+        break
+    else:
+        i = i + 1
 
-#Propulsive efficiency#
+
+
+    #Propulsive efficiency#
 n_prop = (m_dot_4*(v_9eff-v_fs)+m_dot_bypass*(v_19eff-v_fs))*v_fs/(((0.5*m_dot_4)*(v_9eff**2-v_fs**2)+(0.5*m_dot_bypass)*(v_19eff**2-v_fs**2)))
 
 #Thermodynamic efficiency #
