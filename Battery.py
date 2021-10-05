@@ -11,7 +11,7 @@ BPR = 12
 PR_fan = 1.4
 PR_LPC = 1.7
 PR_HPC = 12.5
-#T_combexit = 1400   #K
+T_combexit = 1400   #K
 n_is_fan = 0.9
 n_is_C = 0.92
 n_is_T = 0.9
@@ -80,75 +80,86 @@ p_t3 = p_t25 * PR_HPC
 T_t3 = isentropcomp_T(T_t25, n_is_C, p_t25, p_t3, k_a)
 W_req_HPC = m_dot_core * c_p_a * (T_t3- T_t25)
 
-for T_combexit in np.linspace(1000, 1600, 10000):
-    ### Combustion conditions ###
-    m_dot_f = (m_dot_core * c_p_g * (T_combexit - T_t3)) / (n_comb * LHV *10**6)
-    m_dot_4 = m_dot_core + m_dot_f
-    p_t4 = PR_comb * p_t3
-
-    ### HPT conditions ###
-    T_t45 = T_combexit - (W_req_HPC / (n_mech * m_dot_4 * c_p_g))
-    p_t45 = p_t4*(1 - 1/n_is_T*(1- T_t45/T_combexit)) ** (k_g/(k_g - 1))
-
-    ### LPT conditions ###
-    T_gg = T_t45 - ((W_req_LPC + 1/(BPR+1)* 0.85 * W_req_fan) / (n_mech * m_dot_4 * c_p_g))
-    p_gg = p_t45 * (1 - 1/n_is_T*(1- T_gg/T_t45)) ** (k_g/(k_g - 1))
-    T_t5 = T_t45 - ((W_req_LPC + 0.85 * W_req_fan) / (n_mech * m_dot_4 * c_p_g))
-    p_t5 = p_t45 * (1 - 1/n_is_T*(1- T_t5/T_t45)) ** (k_g/(k_g - 1))
 
 
+## loop ##
+F_Nstart = 17456 #N
+M_fuelstart = 898988 #kg
 
-    ### Core nozzle conditions ###
-    e_c = critPR(n_nozzle, k_g)
-    PR_noz = p_t5/p_a
-    v_fs = M * sqrt(k_a*R*T_a)
-    if PR_noz > e_c:
-        T_8 = T_t5 * (2/(k_g+1))
-        p_8 = p_t5/e_c
-        v_8 = sqrt(k_g*R*T_8)
-        rho_8 = p_8/(R*T_8)
-        A_8 = m_dot_4/(rho_8*v_8)
-        F_core = m_dot_4*(v_8-v_fs) + A_8 * (p_8-p_a)
-        v_9eff = F_core / m_dot_4 + v_fs
-        #print("Core nozzle is choked")
-    else:
-        p_8 = p_a
-        T_8 = isentropexp_T(T_t5, n_nozzle, p_t5, p_a, k_g)
-        if T_t5 > T_8:
-            v_8 = sqrt(2 * c_p_g * (T_t5 - T_8))
+while
+
+    for T_combexit in np.linspace(1000, 1600, 10000):
+
+        ### Combustion conditions ###
+        m_dot_f = (m_dot_core * c_p_g * (T_combexit - T_t3)) / (n_comb * LHV *10**6)
+        m_dot_4 = m_dot_core + m_dot_f
+        p_t4 = PR_comb * p_t3
+
+        ### HPT conditions ###
+        T_t45 = T_combexit - (W_req_HPC / (n_mech * m_dot_4 * c_p_g))
+        p_t45 = p_t4*(1 - 1/n_is_T*(1- T_t45/T_combexit)) ** (k_g/(k_g - 1))
+
+        ### LPT conditions ###
+        T_gg = T_t45 - ((W_req_LPC + 1/(BPR+1)* 0.85 * W_req_fan) / (n_mech * m_dot_4 * c_p_g))
+        p_gg = p_t45 * (1 - 1/n_is_T*(1- T_gg/T_t45)) ** (k_g/(k_g - 1))
+        T_t5 = T_t45 - ((W_req_LPC + 0.85 * W_req_fan) / (n_mech * m_dot_4 * c_p_g))
+        p_t5 = p_t45 * (1 - 1/n_is_T*(1- T_t5/T_t45)) ** (k_g/(k_g - 1))
+
+
+
+        ### Core nozzle conditions ###
+        e_c = critPR(n_nozzle, k_g)
+        PR_noz = p_t5/p_a
+        v_fs = M * sqrt(k_a*R*T_a)
+        if PR_noz > e_c:
+            T_8 = T_t5 * (2/(k_g+1))
+            p_8 = p_t5/e_c
+            v_8 = sqrt(k_g*R*T_8)
+            rho_8 = p_8/(R*T_8)
+            A_8 = m_dot_4/(rho_8*v_8)
+            F_core = m_dot_4*(v_8-v_fs) + A_8 * (p_8-p_a)
+            v_9eff = F_core / m_dot_4 + v_fs
+            #print("Core nozzle is choked")
         else:
-            v_8 = sqrt(2 * c_p_g * (T_8 - T_t5))
-        F_core = m_dot_4 * (v_8 - v_fs)
-        v_9eff = v_8
-        #print("Core nozzle is not choked")
+            p_8 = p_a
+            T_8 = isentropexp_T(T_t5, n_nozzle, p_t5, p_a, k_g)
+            if T_t5 > T_8:
+                v_8 = sqrt(2 * c_p_g * (T_t5 - T_8))
+            else:
+                v_8 = sqrt(2 * c_p_g * (T_8 - T_t5))
+            F_core = m_dot_4 * (v_8 - v_fs)
+            v_9eff = v_8
+            #print("Core nozzle is not choked")
 
-    ### Bypass nozzle conditions ###
-    e_c_bypass = critPR(n_nozzle, k_a)
-    PR_bypass = p_t21/p_a
-    if PR_bypass > e_c_bypass:
-        T_18 = T_t21*(2/(k_a+1))
-        p_18 = p_t21/e_c_bypass
-        v_18 = sqrt(k_a * R * T_18)
-        rho_18 = p_18 / (R * T_18)
-        A_18 = m_dot_bypass / (rho_18 * v_18)
-        F_bypass = m_dot_bypass * (v_18 - v_fs) + A_18 * (p_18 - p_a)
-        v_19eff = F_bypass / m_dot_bypass + v_fs
-        #print("Bypass nozzle is choked")
-    else:
-        p_18 = p_a
-        T_18 = isentropexp_T(T_t21, n_nozzle, p_t21, p_a, k_a)
-        v_18 = sqrt(2*c_p_a*(T_t21-T_18))
-        F_bypass = m_dot_bypass * (v_18 - v_fs)
-        v_19eff = v_18
-        print("Bypasss nozzle is not choked")
+        ### Bypass nozzle conditions ###
+        e_c_bypass = critPR(n_nozzle, k_a)
+        PR_bypass = p_t21/p_a
+        if PR_bypass > e_c_bypass:
+            T_18 = T_t21*(2/(k_a+1))
+            p_18 = p_t21/e_c_bypass
+            v_18 = sqrt(k_a * R * T_18)
+            rho_18 = p_18 / (R * T_18)
+            A_18 = m_dot_bypass / (rho_18 * v_18)
+            F_bypass = m_dot_bypass * (v_18 - v_fs) + A_18 * (p_18 - p_a)
+            v_19eff = F_bypass / m_dot_bypass + v_fs
+            #print("Bypass nozzle is choked")
+        else:
+            p_18 = p_a
+            T_18 = isentropexp_T(T_t21, n_nozzle, p_t21, p_a, k_a)
+            v_18 = sqrt(2*c_p_a*(T_t21-T_18))
+            F_bypass = m_dot_bypass * (v_18 - v_fs)
+            v_19eff = v_18
+            print("Bypasss nozzle is not choked")
 
-    ### Overall Performance ###
-    F_N = F_core + F_bypass
-    TSFC = m_dot_f/F_N *1000000 #g/kN.S
+        ### Overall Performance ###
+        F_N = F_core + F_bypass
+        TSFC = m_dot_f/F_N *1000000 #g/kN.S
 
-    if F_N > 17656.45*0.9999 and F_N < 17656.45*1.0001:
-        print("T 4 = ", T_combexit)
-        break
+        if F_N > F_Nstart*0.9999 and F_N < F_Nstart*1.0001:
+            break
+
+    M_fuel = m_dot_f * 3 * 60 * 60 * 2
+    M_fuelstart = M_fuel
 
 
 #Propulsive efficiency#
@@ -170,24 +181,25 @@ n_tot = (v_fs*F_N)/(LHV*m_dot_f*1000000)
 n_totcheck = n_th*n_prop
 OPR = PR_LPC*PR_HPC
 
-print()
-print("Part One-cycle calculation")
-print()
-print("At cruise conditions:")
-print("OPR = ", OPR)
-print("Thrust = ", F_N, "N")
-print("TSFC =", TSFC, "g/kN.S")
-print()
-print("Efficiencies:")
-print("Thermodynamic efficiendcy = ", n_thdy)
-print("Gas generation efficiendcy = ", n_gas)
-print("Thermal efficiendcy = ", n_th)
-print("Propulsive efficiendcy = ", n_prop)
-print("------------------------------------------")
-print("Total efficiency = ", n_tot)
-print("Combined efficiencies total check =", n_th*n_prop)
-print("Combined efficiencies thermal check =", n_gas*n_thdy*n_comb)
-print("Combined efficiencies prop check =", n_gas*n_thdy*n_comb*n_prop)
+
+# print()
+# print("Part One-cycle calculation")
+# print()
+# print("At cruise conditions:")
+# print("OPR = ", OPR)
+# print("Thrust = ", F_N, "N")
+# print("TSFC =", TSFC, "g/kN.S")
+# print()
+# print("Efficiencies:")
+# print("Thermodynamic efficiendcy = ", n_thdy)
+# print("Gas generation efficiendcy = ", n_gas)
+# print("Thermal efficiendcy = ", n_th)
+# print("Propulsive efficiendcy = ", n_prop)
+# print("------------------------------------------")
+# print("Total efficiency = ", n_tot)
+# print("Combined efficiencies total check =", n_th*n_prop)
+# print("Combined efficiencies thermal check =", n_gas*n_thdy*n_comb)
+# print("Combined efficiencies prop check =", n_gas*n_thdy*n_comb*n_prop)
 
 
 
