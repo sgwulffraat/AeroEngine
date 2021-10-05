@@ -92,6 +92,8 @@ Bat_density = 550 #Wh/kg
 Bat_weight = E_carried/Bat_density
 print("The weight of the battery =", Bat_weight, " kg")
 cable_weight = 16 #kg
+motor_weight = (W_req_fan_bat/1000)/10
+pmu_weight = Bat_weight+cable_weight+motor_weight
 
 ## loop ##
 F_Nstart = 17456 #N
