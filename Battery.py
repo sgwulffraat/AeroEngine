@@ -150,44 +150,49 @@ for T_combexit in np.linspace(1000, 1600, 10000):
         print("T 4 = ", T_combexit)
         break
 
+#battery calculations
+print("The power provided by one battery =",W_req_fan_bat," W")
 
-#Propulsive efficiency#
-n_prop = (m_dot_4*(v_9eff-v_fs)+m_dot_bypass*(v_19eff-v_fs))*v_fs/(((0.5*m_dot_4)*(v_9eff**2-v_fs**2)+(0.5*m_dot_bypass)*(v_19eff**2-v_fs**2)))
+E_carried = W_req_fan_bat * 2 * 60 * 60 * 3
+print("The total amount of energy carried by the battteries =", E_carried," J")
 
-#Thermodynamic efficiency #
-P_gg = m_dot_4*c_p_g*T_gg*(1-(p_t/p_gg)**((k_g-1)/k_g))-0.5*m_dot_4*v_fs**2
-n_thdy = P_gg / (m_dot_core*c_p_g*(T_combexit-T_t3))
-
-#Gas generation efficiency #
-n_gas = ((0.5*m_dot_4)*(v_9eff**2-v_fs**2)+(0.5*m_dot_bypass)*(v_19eff**2-v_fs**2))/P_gg
-
-#Thermal efficiency #
-n_th = ((0.5 * m_dot_4)*(v_9eff**2 - v_fs**2) + (0.5 * m_dot_bypass)*(v_19eff**2 - v_fs**2))/(m_dot_f * LHV*1000000)
-
-
-#Overall efficiency#
-n_tot = (v_fs*F_N)/(LHV*m_dot_f*1000000)
-n_totcheck = n_th*n_prop
-OPR = PR_LPC*PR_HPC
-
-print()
-print("Part One-cycle calculation")
-print()
-print("At cruise conditions:")
-print("OPR = ", OPR)
-print("Thrust = ", F_N, "N")
-print("TSFC =", TSFC, "g/kN.S")
-print()
-print("Efficiencies:")
-print("Thermodynamic efficiendcy = ", n_thdy)
-print("Gas generation efficiendcy = ", n_gas)
-print("Thermal efficiendcy = ", n_th)
-print("Propulsive efficiendcy = ", n_prop)
-print("------------------------------------------")
-print("Total efficiency = ", n_tot)
-print("Combined efficiencies total check =", n_th*n_prop)
-print("Combined efficiencies thermal check =", n_gas*n_thdy*n_comb)
-print("Combined efficiencies prop check =", n_gas*n_thdy*n_comb*n_prop)
+# #Propulsive efficiency#
+# n_prop = (m_dot_4*(v_9eff-v_fs)+m_dot_bypass*(v_19eff-v_fs))*v_fs/(((0.5*m_dot_4)*(v_9eff**2-v_fs**2)+(0.5*m_dot_bypass)*(v_19eff**2-v_fs**2)))
+#
+# #Thermodynamic efficiency #
+# P_gg = m_dot_4*c_p_g*T_gg*(1-(p_t/p_gg)**((k_g-1)/k_g))-0.5*m_dot_4*v_fs**2
+# n_thdy = P_gg / (m_dot_core*c_p_g*(T_combexit-T_t3))
+#
+# #Gas generation efficiency #
+# n_gas = ((0.5*m_dot_4)*(v_9eff**2-v_fs**2)+(0.5*m_dot_bypass)*(v_19eff**2-v_fs**2))/P_gg
+#
+# #Thermal efficiency #
+# n_th = ((0.5 * m_dot_4)*(v_9eff**2 - v_fs**2) + (0.5 * m_dot_bypass)*(v_19eff**2 - v_fs**2))/(m_dot_f * LHV*1000000)
+#
+#
+# #Overall efficiency#
+# n_tot = (v_fs*F_N)/(LHV*m_dot_f*1000000)
+# n_totcheck = n_th*n_prop
+# OPR = PR_LPC*PR_HPC
+#
+# print()
+# print("Part One-cycle calculation")
+# print()
+# print("At cruise conditions:")
+# print("OPR = ", OPR)
+# print("Thrust = ", F_N, "N")
+# print("TSFC =", TSFC, "g/kN.S")
+# print()
+# print("Efficiencies:")
+# print("Thermodynamic efficiendcy = ", n_thdy)
+# print("Gas generation efficiendcy = ", n_gas)
+# print("Thermal efficiendcy = ", n_th)
+# print("Propulsive efficiendcy = ", n_prop)
+# print("------------------------------------------")
+# print("Total efficiency = ", n_tot)
+# print("Combined efficiencies total check =", n_th*n_prop)
+# print("Combined efficiencies thermal check =", n_gas*n_thdy*n_comb)
+# print("Combined efficiencies prop check =", n_gas*n_thdy*n_comb*n_prop)
 
 
 
