@@ -68,7 +68,6 @@ W_req_fan = m_dot*c_p_a*(T_t21-T_t)
 
 ### Battery conditions ###
 W_req_fan_bat = 0.15 * W_req_fan
-print("Battery power =", W_req_fan_bat)
 
 ### LPC conditions ###
 p_t25 = PR_LPC * p_t21
@@ -81,30 +80,30 @@ T_t3 = isentropcomp_T(T_t25, n_is_C, p_t25, p_t3, k_a)
 W_req_HPC = m_dot_core * c_p_a * (T_t3- T_t25)
 
 #battery calculations
-print("The power provided by one battery =",W_req_fan_bat," W")
-
 E_carried = W_req_fan_bat * 2  * 3 #in Wh
 efficiency_pmu = 0.95*0.99*0.995*0.95
 E_carried = (W_req_fan_bat * 2  * 3)/efficiency_pmu #in Wh
-print("The total amount of energy carried by the battteries =", E_carried," Wh")
-Bat_density = 500 #Wh/kg
 Bat_density = 550 #Wh/kg
 Bat_weight = E_carried/Bat_density
-print("The weight of the battery =", Bat_weight, " kg")
-cable_weight = 16 #kg
-motor_weight = (W_req_fan_bat/1000)/10
-pmu_weight = Bat_weight+cable_weight+motor_weight
+cable_weight = 20 #kg
+motor_weight = (W_req_fan_bat/10000)*2
+M_battsys = Bat_weight+cable_weight+motor_weight
+
+print("### Battery characteristics ###")
+print()
+print("The power provided by one battery =",W_req_fan_bat,"W")
+print("The total amount of energy carried by the battteries =", E_carried,"Wh")
+print("The weight of the battery =", Bat_weight, "kg")
+print("Total PMU system weight =", M_battsys, "kg")
 
 
 ## loop ##
 F_Nstart = 17656.45 #N
 M_fuelstart = 5476.52 #kg
-M_empty = 68000 - 5476.52 + cable_weight
-LD = 17
+M_empty = 63000 - 5476.52 + M_battsys
+LD = 63000*9.81/(F_Nstart*2)
 i = 0
-while i < 30:
-    print("i =", i)
-    print("F_Nstart = ", F_Nstart)
+while i < 10:
     for T_combexit in np.linspace(800, 1700, 10000):
 
         ### Combustion conditions ###
@@ -170,26 +169,26 @@ while i < 30:
 
         ### Overall Performance ###
         F_N = F_core + F_bypass
-        TSFC = m_dot_f/F_N *1000000 #g/kN.S
+
+
 
         if F_N > F_Nstart*0.9999 and F_N < F_Nstart*1.0001:
+            TSFC = m_dot_f / F_N * 1000000  # g/kN.S
             break
 
     M_fuel = m_dot_f * 3 * 60 * 60 * 2
-    print("F_n = ", F_N)
-    print("M_fuel =", M_fuel)
     M_total = M_empty + M_fuel
     F_Nstart = (M_total * 9.81 / LD) / 2
     M_fuelstart = M_fuel
 
 
-    if F_N > F_Nstart*0.999 and F_N < F_Nstart*1.001:
+    if F_N > F_Nstart*0.9999 and F_N < F_Nstart*1.0001:
         print()
-        print(" ##### Loop completed in ", i, "iterations #####")
+        print("##### Loop completed in", i+1, "iterations #####")
         print()
         print("M_total = ", M_total, "kg")
         print("F_N = ", F_Nstart, "N")
-        print("TSFC = ", TSFC, "g/kN.S")
+        print("M_fuel = ", M_fuel, "kg")
         break
     else:
         i = i + 1
