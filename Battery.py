@@ -89,6 +89,8 @@ cable_weight = 20 #kg
 motor_weight = (W_req_fan_bat/10000)*2
 M_battsys = Bat_weight+cable_weight+motor_weight
 
+
+
 print("### Battery characteristics ###")
 print()
 print("The power provided by one battery =",W_req_fan_bat,"W")
@@ -104,7 +106,7 @@ M_empty = 63000 - 5476.52 + M_battsys
 LD = 63000*9.81/(F_Nstart*2)
 i = 0
 while i < 10:
-    for T_combexit in np.linspace(800, 1700, 10000):
+    for T_combexit in np.linspace(1200, 1700, 10000):
 
         ### Combustion conditions ###
         m_dot_f = (m_dot_core * c_p_g * (T_combexit - T_t3)) / (n_comb * LHV *10**6)
@@ -116,7 +118,7 @@ while i < 10:
         p_t45 = p_t4*(1 - 1/n_is_T*(1- T_t45/T_combexit)) ** (k_g/(k_g - 1))
 
         ### LPT conditions ###
-        T_gg = T_t45 - ((W_req_LPC + 1/(BPR+1)* 0.85 * W_req_fan) / (n_mech * m_dot_4 * c_p_g))
+        T_gg = T_t45 - ((W_req_LPC + 1/(BPR+1) * 0.85 * W_req_fan) / (n_mech * m_dot_4 * c_p_g))
         p_gg = p_t45 * (1 - 1/n_is_T*(1- T_gg/T_t45)) ** (k_g/(k_g - 1))
         T_t5 = T_t45 - ((W_req_LPC + 0.85 * W_req_fan) / (n_mech * m_dot_4 * c_p_g))
         p_t5 = p_t45 * (1 - 1/n_is_T*(1- T_t5/T_t45)) ** (k_g/(k_g - 1))
@@ -189,6 +191,7 @@ while i < 10:
         print("M_total = ", M_total, "kg")
         print("F_N = ", F_Nstart, "N")
         print("M_fuel = ", M_fuel, "kg")
+        print("TiT =", T_combexit)
         print()
         break
     else:
