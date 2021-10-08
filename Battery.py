@@ -189,11 +189,19 @@ while i < 10:
         print("M_total = ", M_total, "kg")
         print("F_N = ", F_Nstart, "N")
         print("M_fuel = ", M_fuel, "kg")
+        print()
         break
     else:
         i = i + 1
 
-
+#emissions
+M_O2 = M_fuel * 567.9645/167.3110
+M_CO2 = (M_fuel + M_O2) * 528.114/735.2865
+M_H2O = (M_fuel + M_O2) * 207.1735/735.2865
+print("### Emissions ###")
+print()
+print("Delta CO2 =",17286.273 - M_CO2, "kg")
+print("Delta H2O =",6781.221 - M_H2O, "kg")
 
     #Propulsive efficiency#
 n_prop = (m_dot_4*(v_9eff-v_fs)+m_dot_bypass*(v_19eff-v_fs))*v_fs/(((0.5*m_dot_4)*(v_9eff**2-v_fs**2)+(0.5*m_dot_bypass)*(v_19eff**2-v_fs**2)))
