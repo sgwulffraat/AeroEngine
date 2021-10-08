@@ -35,7 +35,7 @@ def isentropcomp_T(T1, n_is, p1, p2, k):
     return T2
 
 def isentropexp_T(T1, n_is, p1, p2, k):
-    T2 = (-T1 * n_is * (1 - (p2 / p1) ** ((k - 1) / k) )) + T1
+    T2 = T1 * n_is * (1 - (p2 / p1) ** ((k - 1) / k) )
     return T2
 
 def isentropcomp_p(p1, n_is, M, k):
@@ -106,7 +106,7 @@ M_empty = 63000 - 5476.52 + M_battsys
 LD = 63000*9.81/(F_Nstart*2)
 i = 0
 while i < 10:
-    for T_combexit in np.linspace(1200, 1600, 10000):
+    for T_combexit in np.linspace(700, 1600, 10000):
 
         ### Combustion conditions ###
         m_dot_f = (m_dot_core * c_p_g * (T_combexit - T_t3)) / (n_comb * LHV *10**6)
@@ -141,13 +141,13 @@ while i < 10:
             #print("Core nozzle is choked")
         else:
             p_8 = p_a
-            T_8 = isentropexp_T(T_t5, n_nozzle, p_t5, p_a, k_g)
-            if T_t5 > T_8:
-                v_8 = sqrt(2 * c_p_g * (T_t5 - T_8))
+            T_78 = isentropexp_T(T_t5, n_nozzle, p_t5, p_a, k_g)
+            if T_78 > 0:
+                v_8 = sqrt(2 * c_p_g * (T_78))
+                v_9eff = v_8
+                F_core = m_dot_4 * (v_8 - v_fs)
             else:
-                v_8 = sqrt(2 * c_p_g * (T_8 - T_t5))
-            F_core = m_dot_4 * (v_8 - v_fs)
-            v_9eff = v_8
+                F_core = 0
             nzchoked = False
             #print("Core nozzle is not choked")
 
@@ -197,7 +197,7 @@ while i < 10:
         print("F_N = ", F_Nstart, "N")
         print("Delta Fuel mass = ", M_fuel - 5476.52, "kg")
         print("Nozzle choked condition =", nzchoked)
-        print("TiT =", T_combexit)
+        print("TiT =", T_combexit, "K")
         print()
         break
     else:
@@ -209,8 +209,8 @@ M_CO2 = (M_fuel + M_O2) * 528.114/735.2865
 M_H2O = (M_fuel + M_O2) * 207.1735/735.2865
 print("### Emissions ###")
 print()
-print("Delta CO2 =",17286.273 - M_CO2, "kg")
-print("Delta H2O =",6781.221 - M_H2O, "kg")
+print("Delta CO2 =",M_CO2 - 17286.273, "kg")
+print("Delta H2O =",M_H2O - 6781.221, "kg")
 
     #Propulsive efficiency#
 n_prop = (m_dot_4*(v_9eff-v_fs)+m_dot_bypass*(v_19eff-v_fs))*v_fs/(((0.5*m_dot_4)*(v_9eff**2-v_fs**2)+(0.5*m_dot_bypass)*(v_19eff**2-v_fs**2)))
