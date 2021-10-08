@@ -84,10 +84,11 @@ E_carried = W_req_fan_bat * 2  * 3 #in Wh
 efficiency_pmu = 0.95*0.99*0.995*0.95
 E_carried = (W_req_fan_bat * 2  * 3)/efficiency_pmu #in Wh
 Bat_density = 600 #Wh/kg
-Bat_weight = E_carried/Bat_density
-cable_weight = 20 #kg
-motor_weight = (W_req_fan_bat/10000)*2
-M_battsys = Bat_weight+cable_weight+motor_weight
+Bat_weight = E_carried/Bat_density #kg
+cable_length = 25 #m
+cable_weight = cable_length*W_req_fan_bat/1000000 #kg
+motor_weight = (W_req_fan_bat/10000)*2 #kg
+M_battsys = Bat_weight+cable_weight+motor_weight #kg
 
 
 print()
@@ -105,7 +106,7 @@ M_empty = 63000 - 5476.52 + M_battsys
 LD = 63000*9.81/(F_Nstart*2)
 i = 0
 while i < 10:
-    for T_combexit in np.linspace(1200, 1500, 10000):
+    for T_combexit in np.linspace(1200, 1600, 10000):
 
         ### Combustion conditions ###
         m_dot_f = (m_dot_core * c_p_g * (T_combexit - T_t3)) / (n_comb * LHV *10**6)
