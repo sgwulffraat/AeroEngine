@@ -90,9 +90,8 @@ motor_weight = (W_req_fan_bat/10000)*2
 M_battsys = Bat_weight+cable_weight+motor_weight
 
 
-
-print("### Battery characteristics ###")
 print()
+print("### Battery characteristics ###")
 print("The power provided by one battery =",W_req_fan_bat,"W")
 print("The total amount of energy carried by the battteries =", E_carried,"Wh")
 print("The weight of the battery =", Bat_weight, "kg")
@@ -106,7 +105,7 @@ M_empty = 63000 - 5476.52 + M_battsys
 LD = 63000*9.81/(F_Nstart*2)
 i = 0
 while i < 10:
-    for T_combexit in np.linspace(700, 1600, 10000):
+    for T_combexit in np.linspace(1200, 1500, 10000):
 
         ### Combustion conditions ###
         m_dot_f = (m_dot_core * c_p_g * (T_combexit - T_t3)) / (n_comb * LHV *10**6)
@@ -191,10 +190,9 @@ while i < 10:
     if F_N > F_Nstart*0.9999 and F_N < F_Nstart*1.0001:
         print()
         print("##### Loop completed in", i+1, "iterations #####")
-        print()
-        print("M_total = ", M_total, "kg")
-        print("Fuel flow =", m_dot_f)
-        print("F_N = ", F_Nstart, "N")
+        print("Total aircraft weight = ", M_total, "kg")
+        print("Fuel flow per engine =", m_dot_f)
+        print("Net Thrust = ", F_Nstart, "N")
         print("Delta Fuel mass = ", M_fuel - 5476.52, "kg")
         print("Nozzle choked condition =", nzchoked)
         print("TiT =", T_combexit, "K")
@@ -208,7 +206,6 @@ M_O2 = M_fuel * 567.9645/167.3110
 M_CO2 = (M_fuel + M_O2) * 528.114/735.2865
 M_H2O = (M_fuel + M_O2) * 207.1735/735.2865
 print("### Emissions ###")
-print()
 print("Delta CO2 =",M_CO2 - 17286.273, "kg")
 print("Delta H2O =",M_H2O - 6781.221, "kg")
 
