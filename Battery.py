@@ -83,7 +83,7 @@ W_req_HPC = m_dot_core * c_p_a * (T_t3- T_t25)
 E_carried = W_req_fan_bat * 2  * 3 #in Wh
 efficiency_pmu = 0.95*0.99*0.995*0.95
 E_carried = (W_req_fan_bat * 2  * 3)/efficiency_pmu #in Wh
-Bat_density = 550 #Wh/kg
+Bat_density = 600 #Wh/kg
 Bat_weight = E_carried/Bat_density
 cable_weight = 20 #kg
 motor_weight = (W_req_fan_bat/10000)*2
@@ -106,7 +106,7 @@ M_empty = 63000 - 5476.52 + M_battsys
 LD = 63000*9.81/(F_Nstart*2)
 i = 0
 while i < 10:
-    for T_combexit in np.linspace(1200, 1700, 10000):
+    for T_combexit in np.linspace(1200, 1600, 10000):
 
         ### Combustion conditions ###
         m_dot_f = (m_dot_core * c_p_g * (T_combexit - T_t3)) / (n_comb * LHV *10**6)
@@ -137,6 +137,7 @@ while i < 10:
             A_8 = m_dot_4/(rho_8*v_8)
             F_core = m_dot_4*(v_8-v_fs) + A_8 * (p_8-p_a)
             v_9eff = F_core / m_dot_4 + v_fs
+            nzchoked = True
             #print("Core nozzle is choked")
         else:
             p_8 = p_a
@@ -147,6 +148,7 @@ while i < 10:
                 v_8 = sqrt(2 * c_p_g * (T_8 - T_t5))
             F_core = m_dot_4 * (v_8 - v_fs)
             v_9eff = v_8
+            nzchoked = False
             #print("Core nozzle is not choked")
 
         ### Bypass nozzle conditions ###
@@ -160,6 +162,7 @@ while i < 10:
             A_18 = m_dot_bypass / (rho_18 * v_18)
             F_bypass = m_dot_bypass * (v_18 - v_fs) + A_18 * (p_18 - p_a)
             v_19eff = F_bypass / m_dot_bypass + v_fs
+            bpchoked = True
             #print("Bypass nozzle is choked")
         else:
             p_18 = p_a
@@ -167,7 +170,8 @@ while i < 10:
             v_18 = sqrt(2*c_p_a*(T_t21-T_18))
             F_bypass = m_dot_bypass * (v_18 - v_fs)
             v_19eff = v_18
-            print("Bypasss nozzle is not choked")
+            bpchoked = False
+            #print("Bypasss nozzle is not choked")
 
         ### Overall Performance ###
         F_N = F_core + F_bypass
@@ -189,8 +193,10 @@ while i < 10:
         print("##### Loop completed in", i+1, "iterations #####")
         print()
         print("M_total = ", M_total, "kg")
+        print("Fuel flow =", m_dot_f)
         print("F_N = ", F_Nstart, "N")
-        print("M_fuel = ", M_fuel, "kg")
+        print("Delta Fuel mass = ", M_fuel - 5476.52, "kg")
+        print("Nozzle choked condition =", nzchoked)
         print("TiT =", T_combexit)
         print()
         break
