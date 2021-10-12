@@ -81,7 +81,7 @@ W_req_HPC = m_dot_core * c_p_a * (T_t3- T_t25)
 
 #battery calculations
 E_carried = W_req_fan_bat * 2  * 3 #in Wh
-efficiency_pmu = 0.95*0.99*0.995*0.95
+efficiency_pmu = 0.95*0.99*0.995*0.95*0.99
 E_carried = (W_req_fan_bat * 2  * 3)/efficiency_pmu #in Wh
 Bat_density = 600 #Wh/kg
 Bat_weight = E_carried/Bat_density #kg
