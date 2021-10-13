@@ -88,7 +88,7 @@ Bat_weight = E_carried/Bat_density #kg
 cable_length = 25 #m
 cable_weight = cable_length*W_req_fan_bat/1000000 #kg
 motor_weight = (W_req_fan_bat/10000)*2 #kg
-M_battsys = Bat_weight+cable_weight+motor_weight #kg
+M_battsys = Bat_weight+cable_weight+motor_weight+0.2*motor_weight #kg
 
 
 print()
@@ -97,7 +97,7 @@ print("The power provided by one battery =",W_req_fan_bat,"W")
 print("The total amount of energy carried by the battteries =", E_carried,"Wh")
 print("The weight of the battery =", Bat_weight, "kg")
 print("Total PMU system weight =", M_battsys, "kg")
-
+print("The efficiency of the PMU =", efficiency_pmu)
 
 ## loop ##
 F_Nstart = 17656.45 #N
