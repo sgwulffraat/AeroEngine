@@ -88,7 +88,7 @@ Bat_weight = E_carried/Bat_density #kg
 cable_length = 25 #m
 cable_weight = cable_length*W_req_fan_bat/1000000 #kg
 motor_weight = (W_req_fan_bat/10000)*2 #kg
-M_battsys = Bat_weight+cable_weight+motor_weight+0.2*motor_weight #kg
+M_battsys = Bat_weight+cable_weight+motor_weight #kg
 
 
 print()
@@ -102,11 +102,11 @@ print("The efficiency of the PMU =", efficiency_pmu)
 ## loop ##
 F_Nstart = 17656.45 #N
 M_fuelstart = 5476.52 #kg
-M_empty = 63000 - 5476.52 + M_battsys
+M_empty = 63000 - 5476.52 #+ M_battsys
 LD = 63000*9.81/(F_Nstart*2)
 i = 0
 while i < 10:
-    for T_combexit in np.linspace(1200, 1600, 10000):
+    for T_combexit in np.linspace(1000, 1600, 10000):
 
         ### Combustion conditions ###
         m_dot_f = (m_dot_core * c_p_g * (T_combexit - T_t3)) / (n_comb * LHV *10**6)
@@ -180,6 +180,7 @@ while i < 10:
 
         if F_N > F_Nstart*0.9999 and F_N < F_Nstart*1.0001:
             TSFC = m_dot_f / F_N * 1000000  # g/kN.S
+            print(T_combexit)
             break
 
     M_fuel = m_dot_f * 3 * 60 * 60 * 2
@@ -197,6 +198,7 @@ while i < 10:
         print("Delta Fuel mass = ", M_fuel - 5476.52, "kg")
         print("Nozzle choked condition =", nzchoked)
         print("TiT =", T_combexit, "K")
+        print("TSFC =", TSFC)
         print()
         break
     else:
@@ -209,49 +211,6 @@ M_H2O = (M_fuel + M_O2) * 207.1735/735.2865
 print("### Emissions ###")
 print("Delta CO2 =",M_CO2 - 17286.273, "kg")
 print("Delta H2O =",M_H2O - 6781.221, "kg")
-
-    #Propulsive efficiency#
-n_prop = (m_dot_4*(v_9eff-v_fs)+m_dot_bypass*(v_19eff-v_fs))*v_fs/(((0.5*m_dot_4)*(v_9eff**2-v_fs**2)+(0.5*m_dot_bypass)*(v_19eff**2-v_fs**2)))
-
-#Thermodynamic efficiency #
-P_gg = m_dot_4*c_p_g*T_gg*(1-(p_t/p_gg)**((k_g-1)/k_g))-0.5*m_dot_4*v_fs**2
-n_thdy = P_gg / (m_dot_core*c_p_g*(T_combexit-T_t3))
-
-#Gas generation efficiency #
-n_gas = ((0.5*m_dot_4)*(v_9eff**2-v_fs**2)+(0.5*m_dot_bypass)*(v_19eff**2-v_fs**2))/P_gg
-
-#Thermal efficiency #
-n_th = ((0.5 * m_dot_4)*(v_9eff**2 - v_fs**2) + (0.5 * m_dot_bypass)*(v_19eff**2 - v_fs**2))/(m_dot_f * LHV*1000000)
-
-
-#Overall efficiency#
-n_tot = (v_fs*F_N)/(LHV*m_dot_f*1000000)
-n_totcheck = n_th*n_prop
-OPR = PR_LPC*PR_HPC
-
-
-# print()
-# print("Part One-cycle calculation")
-# print()
-# print("At cruise conditions:")
-# print("OPR = ", OPR)
-# print("Thrust = ", F_N, "N")
-# print("TSFC =", TSFC, "g/kN.S")
-# print()
-# print("Efficiencies:")
-# print("Thermodynamic efficiendcy = ", n_thdy)
-# print("Gas generation efficiendcy = ", n_gas)
-# print("Thermal efficiendcy = ", n_th)
-# print("Propulsive efficiendcy = ", n_prop)
-# print("------------------------------------------")
-# print("Total efficiency = ", n_tot)
-# print("Combined efficiencies total check =", n_th*n_prop)
-# print("Combined efficiencies thermal check =", n_gas*n_thdy*n_comb)
-# print("Combined efficiencies prop check =", n_gas*n_thdy*n_comb*n_prop)
-
-
-
-#test
 
 
 
