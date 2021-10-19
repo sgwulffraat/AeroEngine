@@ -5,7 +5,8 @@ import numpy as np
 M = 0.78
 h = 10668           #m
 m_dot = 23.81       #kg/s
-PR_COMP = 5.5
+m_fuel = 0.4267     #kg/s
+PR_comp = 5.5
 T_combexit = 1400   #K
 n_is_C = 0.92
 n_is_T = 0.9
@@ -53,18 +54,17 @@ T_t = totalT(T_a, M, k_a)
 p_t = totalp(p_a, T_t, T_a, k_a)
 
 ### Compressor conditions ###
-p_t2 = PR_COMP * p_t
+p_t2 = PR_comp * p_t
 T_t2 = isentropcomp_T(T_t, n_is_C, p_t, p_t2, k_a)
 W_req_LPC = m_dot * c_p_a * (T_t2 - T_t)
 
-
 ### Combustion conditions ###
-m_dot_f = (m_dot * c_p_g * (T_combexit - T_t3)) / (n_comb * LHV *10**6)
-m_dot_4 = m_dot + m_dot_f
+# m_dot_f = (m_dot * c_p_g * (T_combexit - T_t3)) / (n_comb * LHV *10**6)
+# m_dot_4 = m_dot + m_dot_f
 p_t4 = PR_comb * p_t3
 
 ### Turbine conditions ###
-T_t5 = T_combexit - (W_req_HPC / (n_mech * m_dot_4 * c_p_g))
+T_t5 = T_combexit - (W_req_HPC / (n_mech * m_dot * c_p_g))
 p_t5 = p_t4*(1 - 1/n_is_T*(1- T_t45/T_combexit)) ** (k_g/(k_g - 1))
 
 ### nozzle conditions ###
@@ -76,9 +76,9 @@ if PR_noz > e_c:
     p_8 = p_t5/e_c
     v_8 = sqrt(k_g*R*T_8)
     rho_8 = p_8/(R*T_8)
-    A_8 = m_dot_4/(rho_8*v_8)
-    F_core = m_dot_4*(v_8-v_fs) + A_8 * (p_8-p_a)
-    v_9eff = F_core / m_dot_4 + v_fs
+    A_8 = m_dot/(rho_8*v_8)
+    F_core = m_dot*(v_8-v_fs) + A_8 * (p_8-p_a)
+    v_9eff = F_core / m_dot + v_fs
     #print("Nozzle is choked")
 else:
     p_8 = p_a
@@ -87,7 +87,7 @@ else:
         v_8 = sqrt(2 * c_p_g * (T_t5 - T_8))
     else:
         v_8 = sqrt(2 * c_p_g * (T_8 - T_t5))
-    F_core = m_dot_4 * (v_8 - v_fs)
+    F_core = m_dot * (v_8 - v_fs)
     v_9eff = v_8
     #print("Nozzle is not choked")
 
