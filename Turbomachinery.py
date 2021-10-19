@@ -4,19 +4,15 @@ import numpy as np
 ### Inputs ####
 M = 0.78
 h = 10668           #m
-PR_intake = 0.98
-m_dot = 173         #kg/s
-PR_fan = 1.4
-PR_LPC = 1.7
-PR_HPC = 12.5
+m_dot = 23.81       #kg/s
+PR_COMP = 5.5
 T_combexit = 1400   #K
-n_is_fan = 0.9
 n_is_C = 0.92
 n_is_T = 0.9
 n_mech = 0.99
-n_comb = 0.995
+n_comb = 1
 PR_comb = 0.96
-n_nozzle = 0.98
+n_nozzle = 1
 T_a = 218.8         #K
 p_a = 23842         #Pa
 R = 287             #J/kg K
@@ -55,34 +51,21 @@ def critPR(n_j, k):
 ### Inlet conditions ###
 T_t = totalT(T_a, M, k_a)
 p_t = totalp(p_a, T_t, T_a, k_a)
-p_t2 = p_t * PR_intake
 
-### LPC conditions ###
-p_t25 = PR_LPC * p_t21
-T_t25 = isentropcomp_T(T_t21, n_is_C, p_t21, p_t25, k_a)
-W_req_LPC = m_dot_core * c_p_a * (T_t25 - T_t21)
+### Compressor conditions ###
+p_t2 = PR_COMP * p_t
+T_t2 = isentropcomp_T(T_t, n_is_C, p_t, p_t2, k_a)
+W_req_LPC = m_dot * c_p_a * (T_t2 - T_t)
 
-### HPC conditions ###
-p_t3 = p_t25 * PR_HPC
-T_t3 = isentropcomp_T(T_t25, n_is_C, p_t25, p_t3, k_a)
-W_req_HPC = m_dot_core * c_p_a * (T_t3- T_t25)
 
 ### Combustion conditions ###
-m_dot_f = (m_dot_core * c_p_g * (T_combexit - T_t3)) / (n_comb * LHV *10**6)
-m_dot_4 = m_dot_core + m_dot_f
+m_dot_f = (m_dot * c_p_g * (T_combexit - T_t3)) / (n_comb * LHV *10**6)
+m_dot_4 = m_dot + m_dot_f
 p_t4 = PR_comb * p_t3
 
-### HPT conditions ###
-T_t45 = T_combexit - (W_req_HPC / (n_mech * m_dot_4 * c_p_g))
-p_t45 = p_t4*(1 - 1/n_is_T*(1- T_t45/T_combexit)) ** (k_g/(k_g - 1))
-
-### LPT conditions ###
-T_gg = T_t45 - ((W_req_LPC + 1/(BPR+1)* W_req_fan) / (n_mech * m_dot_4 * c_p_g))
-p_gg = p_t45 * (1 - 1/n_is_T*(1- T_gg/T_t45)) ** (k_g/(k_g - 1))
-T_t5 = T_t45 - ((W_req_LPC +  W_req_fan) / (n_mech * m_dot_4 * c_p_g))
-p_t5 = p_t45 * (1 - 1/n_is_T*(1- T_t5/T_t45)) ** (k_g/(k_g - 1))
-
-
+### Turbine conditions ###
+T_t5 = T_combexit - (W_req_HPC / (n_mech * m_dot_4 * c_p_g))
+p_t5 = p_t4*(1 - 1/n_is_T*(1- T_t45/T_combexit)) ** (k_g/(k_g - 1))
 
 ### nozzle conditions ###
 e_c = critPR(n_nozzle, k_g)
@@ -96,7 +79,7 @@ if PR_noz > e_c:
     A_8 = m_dot_4/(rho_8*v_8)
     F_core = m_dot_4*(v_8-v_fs) + A_8 * (p_8-p_a)
     v_9eff = F_core / m_dot_4 + v_fs
-    #print("Core nozzle is choked")
+    #print("Nozzle is choked")
 else:
     p_8 = p_a
     T_8 = isentropexp_T(T_t5, n_nozzle, p_t5, p_a, k_g)
@@ -106,6 +89,6 @@ else:
         v_8 = sqrt(2 * c_p_g * (T_8 - T_t5))
     F_core = m_dot_4 * (v_8 - v_fs)
     v_9eff = v_8
-    #print("Core nozzle is not choked")
+    #print("Nozzle is not choked")
 
 
