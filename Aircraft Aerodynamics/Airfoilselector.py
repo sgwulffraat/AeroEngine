@@ -64,17 +64,17 @@ def NACAcalculator(): #Ouput: (N1,N2)
 
         #Determining NACA code
         if N1 < 10:
-            N_1 = "000" + str(N1)
+            N_1 = "naca000" + str(N1)
         else:
-            N_1 = "00" + str(N1)
+            N_1 = "naca00" + str(N1)
 
         if N2 < 10:
-            N_2 = "000" + str(N2)
+            N_2 = "naca000" + str(N2)
         else:
-            N_2 = "00" + str(N2)
-        NC = (N1,N2)
+            N_2 = "naca00" + str(N2)
+        NC = (N1, N2, N_1, N_2)
         print()
-        print("Selected Airfoils: NACA",N_1, "and NACA",N_2)
+        print("Selected Airfoils:", N_1, "and",N_2)
         print()
         return NC
     else:
