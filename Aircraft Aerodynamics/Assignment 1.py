@@ -24,6 +24,7 @@ Y2 = AF2[1]
 Geom1 = airfoil_geometery(X1, Y1, AoA)
 Geom2 = airfoil_geometery(X2, Y2, AoA)
 
+
 # %% PLOTTING
 
 # Plot the paneled geometry
