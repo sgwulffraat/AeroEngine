@@ -2,11 +2,11 @@ from math import *
 import numpy as np
 
 ### Inputs ####
-M = 0
+M = 0.78
 h = 0               #m
 m_dot = 23.81       #kg/s
 # m_fuel = 0.4267     #kg/s
-T_combexit = 900    #K
+T_combexit = 1150    #K
 PR_comp = 5.5
 n_is_C = 0.83
 n_is_T = 0.82
@@ -14,8 +14,10 @@ n_mech = 0.96
 n_comb = 1
 PR_comb = 0.96
 n_nozzle = 1
-T_a = 288           #K
-p_a = 100000        #Pa
+#T_a = 288           #K
+#p_a = 100000        #Pa
+T_a = 218.808       #K @ h = 35000ft
+p_a = 23842.3       #pa @ h = 35000ft
 R = 287             #J/kg K
 LHV = 43            #43MJ/kg
 c_p_a = 1000        #J/kg K
@@ -80,8 +82,9 @@ if PR_noz > e_c:
     v_8 = sqrt(k_g*R*T_8)
     rho_8 = p_8/(R*T_8)
     A_8 = m_dot_4/(rho_8*v_8)
-    F_core = m_dot_4*(v_8-v_fs) + A_8 * (p_8-p_a)
-    v_9eff = F_core / m_dot_4 + v_fs
+    F_N = m_dot_4*(v_8-v_fs) + A_8 * (p_8-p_a)
+    F_gross = m_dot_4*v_8 + A_8 * (p_8-p_a)
+    v_9eff = F_N / m_dot_4 + v_fs
     nzchoked = True
     print("Core nozzle is choked")
 else:
@@ -90,12 +93,14 @@ else:
     if T_78 > 0:
         v_8 = sqrt(2 * c_p_g * (T_78))
         v_9eff = v_8
-        F_core = m_dot_4 * (v_8 - v_fs)
+        F_N = m_dot_4 * (v_8 - v_fs)
+        F_gross = m_dot_4 * v_8
     else:
-        F_core = 0
+        F_N = 0
+        F_gross = 0
     nzchoked = False
     print("Core nozzle is not choked")
 
 print(T_combexit)
-print(F_core)
+print(F_gross)
 print(A_ratio)
