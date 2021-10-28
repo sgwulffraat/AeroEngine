@@ -67,28 +67,31 @@ p_t4 = PR_comb * p_t3
 T_t5 = T_combexit - (W_req_C / (n_mech * m_dot * c_p_g))
 p_t5 = p_t4*(1 - 1/n_is_T*(1- T_t45/T_combexit)) ** (k_g/(k_g - 1))
 
-### nozzle conditions ###
-e_c = critPR(n_nozzle, k_g)
-PR_noz = p_t5/p_a
-v_fs = M * sqrt(k_a*R*T_a)
-if PR_noz > e_c:
-    T_8 = T_t5 * (2/(k_g+1))
-    p_8 = p_t5/e_c
-    v_8 = sqrt(k_g*R*T_8)
-    rho_8 = p_8/(R*T_8)
-    A_8 = m_dot/(rho_8*v_8)
-    F_core = m_dot*(v_8-v_fs) + A_8 * (p_8-p_a)
-    v_9eff = F_core / m_dot + v_fs
-    #print("Nozzle is choked")
-else:
-    p_8 = p_a
-    T_8 = isentropexp_T(T_t5, n_nozzle, p_t5, p_a, k_g)
-    if T_t5 > T_8:
-        v_8 = sqrt(2 * c_p_g * (T_t5 - T_8))
+### Core nozzle conditions ###
+    e_c = critPR(n_nozzle, k_g)
+    PR_noz = p_t5/p_a
+    v_fs = M * sqrt(k_a*R*T_a)
+    if PR_noz > e_c:
+        T_8 = T_t5 * (2/(k_g+1))
+        p_8 = p_t5/e_c
+        v_8 = sqrt(k_g*R*T_8)
+        rho_8 = p_8/(R*T_8)
+        A_8 = m_dot_4/(rho_8*v_8)
+        F_core = m_dot_4*(v_8-v_fs) + A_8 * (p_8-p_a)
+        v_9eff = F_core / m_dot_4 + v_fs
+        nzchoked = True
+        #print("Core nozzle is choked")
     else:
-        v_8 = sqrt(2 * c_p_g * (T_8 - T_t5))
-    F_core = m_dot * (v_8 - v_fs)
-    v_9eff = v_8
-    #print("Nozzle is not choked")
+        p_8 = p_a
+        T_78 = isentropexp_T(T_t5, n_nozzle, p_t5, p_a, k_g)
+        if T_78 > 0:
+            v_8 = sqrt(2 * c_p_g * (T_78))
+            v_9eff = v_8
+            F_core = m_dot_4 * (v_8 - v_fs)
+        else:
+            F_core = 0
+        nzchoked = False
+        #print("Core nozzle is not choked")
+
 
 
