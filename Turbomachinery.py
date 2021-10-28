@@ -1,5 +1,6 @@
 from math import *
 import numpy as np
+import pandas as pd
 
 ### Inputs ####
 M = 0.78
@@ -61,7 +62,7 @@ T_t2 = isentropcomp_T(T_t, n_is_C, p_t, p_t2, k_a)
 W_req_C = m_dot * c_p_a * (T_t2 - T_t)
 
 ### Combustion conditions ###
-#T_combexit = T_t2 + (m_fuel * n_comb * LHV*10**6)/(m_dot*c_p_g)
+     #T_combexit = T_t2 + (m_fuel * n_comb * LHV*10**6)/(m_dot*c_p_g)
 m_fuel = (m_dot * c_p_g * (T_combexit - T_t2)) / (n_comb * LHV *10**6)
 p_t4 = PR_comb * p_t2
 m_dot_4 = m_fuel + m_dot
@@ -101,6 +102,14 @@ else:
     nzchoked = False
     print("Core nozzle is not choked")
 
+data = {'Temperature [K] ':[T_t, T_t2, T_combexit,T_t5 ,T_8],
+        'Pressure [Pa]':[p_t, p_t2, p_t4, p_t5, p_8],
+        'Mass flow [kg/s]':[m_dot, m_dot, m_dot_4, m_dot_4, m_dot_4]}
+df = pd.DataFrame(data, index=['Inlet', '3', '4', '5', '8'])
+
 print(T_combexit)
 print(F_gross)
 print(A_ratio)
+
+print(df)
+
