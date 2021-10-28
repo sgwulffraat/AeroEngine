@@ -56,15 +56,15 @@ p_t = totalp(p_a, T_t, T_a, k_a)
 ### Compressor conditions ###
 p_t2 = PR_comp * p_t
 T_t2 = isentropcomp_T(T_t, n_is_C, p_t, p_t2, k_a)
-W_req_LPC = m_dot * c_p_a * (T_t2 - T_t)
+W_req_C = m_dot * c_p_a * (T_t2 - T_t)
 
 ### Combustion conditions ###
-# m_dot_f = (m_dot * c_p_g * (T_combexit - T_t3)) / (n_comb * LHV *10**6)
-# m_dot_4 = m_dot + m_dot_f
+T_combexit = T_t2 + (m_dot_f * n_comb * LHV*10**6)/(m_dot*c_p_g)
 p_t4 = PR_comb * p_t3
 
+
 ### Turbine conditions ###
-T_t5 = T_combexit - (W_req_HPC / (n_mech * m_dot * c_p_g))
+T_t5 = T_combexit - (W_req_C / (n_mech * m_dot * c_p_g))
 p_t5 = p_t4*(1 - 1/n_is_T*(1- T_t45/T_combexit)) ** (k_g/(k_g - 1))
 
 ### nozzle conditions ###

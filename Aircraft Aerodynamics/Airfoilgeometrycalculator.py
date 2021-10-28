@@ -15,7 +15,6 @@ def airfoil_geometery(Xdata, Ydata, AoA):
     if (sumEdge < 0):
         Xdata = np.flipud(Xdata)
         Ydata = np.flipud(Ydata)
-    elif (sumEdge > 0):
 
     #COMPUTE GEOMETRIC VARIABLES
 
@@ -40,5 +39,6 @@ def airfoil_geometery(Xdata, Ydata, AoA):
     AoAr = AoA*np.pi/180
     delta = phi + (np.pi / 2)  # Panel normal angle [rad]
     beta = delta - (AoAr * (np.pi / 180))  # Angle between freestream and panel normal [rad]
+    beta[beta > 2 * np.pi] = beta[beta > 2 * np.pi] - 2 * np.pi
 
-    return XC, YC, S, delta, beta
+    return XC, YC, S, phi, N_pan, beta
