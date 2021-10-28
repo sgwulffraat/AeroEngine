@@ -7,11 +7,11 @@ h = 0           #m
 m_dot = 23.81       #kg/s
 m_fuel = 0.4267     #kg/s
 PR_comp = 5.5
-n_is_C = 0.92
-n_is_T = 0.9
-n_mech = 0.99
+n_is_C = 0.85
+n_is_T = 0.84
+n_mech = 0.95
 n_comb = 1
-PR_comb = 0.96
+PR_comb = 0.93
 n_nozzle = 1
 T_a = 288         #K
 p_a = 100000         #Pa
@@ -51,7 +51,7 @@ def critPR(n_j, k):
 ### Inlet conditions ###
 T_t = totalT(T_a, M, k_a)
 p_t = totalp(p_a, T_t, T_a, k_a)
-print(T_t)
+
 ### Compressor conditions ###
 p_t2 = PR_comp * p_t
 T_t2 = isentropcomp_T(T_t, n_is_C, p_t, p_t2, k_a)
