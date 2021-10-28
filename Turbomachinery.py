@@ -3,18 +3,19 @@ import numpy as np
 
 ### Inputs ####
 M = 0
-h = 0           #m
+h = 0               #m
 m_dot = 23.81       #kg/s
-m_fuel = 0.4267     #kg/s
+# m_fuel = 0.4267     #kg/s
+T_combexit = 900    #K
 PR_comp = 5.5
-n_is_C = 0.85
-n_is_T = 0.84
-n_mech = 0.95
+n_is_C = 0.83
+n_is_T = 0.82
+n_mech = 0.96
 n_comb = 1
-PR_comb = 0.93
+PR_comb = 0.96
 n_nozzle = 1
-T_a = 288         #K
-p_a = 100000         #Pa
+T_a = 288           #K
+p_a = 100000        #Pa
 R = 287             #J/kg K
 LHV = 43            #43MJ/kg
 c_p_a = 1000        #J/kg K
@@ -58,20 +59,22 @@ T_t2 = isentropcomp_T(T_t, n_is_C, p_t, p_t2, k_a)
 W_req_C = m_dot * c_p_a * (T_t2 - T_t)
 
 ### Combustion conditions ###
-T_combexit = T_t2 + (m_fuel * n_comb * LHV*10**6)/(m_dot*c_p_g)
+#T_combexit = T_t2 + (m_fuel * n_comb * LHV*10**6)/(m_dot*c_p_g)
+m_fuel = (m_dot * c_p_g * (T_combexit - T_t2)) / (n_comb * LHV *10**6)
 p_t4 = PR_comb * p_t2
 m_dot_4 = m_fuel + m_dot
-
 
 ### Turbine conditions ###
 T_t5 = T_combexit - (W_req_C / (n_mech * m_dot_4 * c_p_g))
 p_t5 = p_t4*(1 - 1/n_is_T*(1- T_t5/T_combexit)) ** (k_g/(k_g - 1))
+
 
 ### Core nozzle conditions ###
 e_c = critPR(n_nozzle, k_g)
 PR_noz = p_t5/p_a
 v_fs = M * sqrt(k_a*R*T_a)
 if PR_noz > e_c:
+    A_ratio = (p_t5 / p_t4) ** ((2 * k_g - n_is_T * (k_g - 1)) / (2 * k_g))
     T_8 = T_t5 * (2/(k_g+1))
     p_8 = p_t5/e_c
     v_8 = sqrt(k_g*R*T_8)
@@ -95,3 +98,4 @@ else:
 
 print(T_combexit)
 print(F_core)
+print(A_ratio)
