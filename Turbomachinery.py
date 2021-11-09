@@ -133,5 +133,9 @@ r = U_s/omega
 
 #velocity triangles
 
+A = np.array([[-phi, 0, 0, phi], [-phi, 0, 0, 0], [-1, 0, 1, 0], [0, 1, 0 ,-1]])
+b = np.array([[psi - 1], [r_c - 1 + psi/2], [-1/phi], [1/phi]])
+x = np.linalg.solve(A, b)
 
 print("de waarde voor u =", U_s)
+print("x = ", np.arctan(x)*180/np.pi)
