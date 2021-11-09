@@ -27,6 +27,8 @@ k_a = 1.4
 k_g = 1.33
 
 
+
+
 ### Functions ###
 def isentropcomp_T(T1, n_is, p1, p2, k):
     T2 = (1 + 1 / n_is * ((p2 / p1) ** ((k - 1) / k) - 1)) * T1
@@ -113,3 +115,18 @@ print(A_ratio)
 
 print(df)
 
+#Design parameters
+RPM = 13800
+omega = RPM*(2*pi)/(60)
+psi = 0.25
+phi = 0.35
+stages = 5
+r = 0.5
+
+power = W_req_C
+w =  power/stages
+
+U_s = sqrt((w)/(psi))
+lambda_s = (2*w)/(U_s**2)
+v_m = phi*U_s
+r = U_s/omega
