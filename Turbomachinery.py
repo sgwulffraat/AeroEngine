@@ -120,13 +120,18 @@ RPM = 13800
 omega = RPM*(2*pi)/(60)
 psi = 0.25
 phi = 0.35
-stages = 5
-r = 0.5
+stages = 3
+r_c = 0.5
 
 power = W_req_C
-w =  power/stages
 
+w =  power/(m_dot*stages)
 U_s = sqrt((w)/(psi))
 lambda_s = (2*w)/(U_s**2)
 v_m = phi*U_s
 r = U_s/omega
+
+#velocity triangles
+
+
+print("de waarde voor u =", U_s)
