@@ -64,7 +64,7 @@ T_t2 = isentropcomp_T(T_t, n_is_C, p_t, p_t2, k_a)
 W_req_C = m_dot * c_p_a * (T_t2 - T_t)
 
 ### Combustion conditions ###
-#T_combexit = T_t2 + (m_fuel * n_comb * LHV*10**6)/(m_dot*c_p_g)
+     #T_combexit = T_t2 + (m_fuel * n_comb * LHV*10**6)/(m_dot*c_p_g)
 m_fuel = (m_dot * c_p_g * (T_combexit - T_t2)) / (n_comb * LHV *10**6)
 p_t4 = PR_comb * p_t2
 m_dot_4 = m_fuel + m_dot
@@ -130,7 +130,7 @@ w =  power/(m_dot*stages)
 U_s = sqrt((w)/(psi))
 lambda_s = (2*w)/(U_s**2)
 v_m = phi*U_s
-r = U_s/omega
+r0 = U_s/omega
 
 #velocity triangles
 
@@ -155,9 +155,18 @@ T_t03 = (W_req_Cs)/(stages*m_dot*c_p_a) + T_t02
 p_t03 = p_t02*((n_is_Cs*(T_t03-T_t02)/T_t02)+1)**(k_a/(k_a - 1))
 pr_ratio_stage3 = p_t03/p_t02
 
-
-
 print('de waarde voor t01 en p01 =', T_t01, p_t01)
 print('de waarde voor t02 en p02 =', T_t02, p_t02)
 print('de waarde voor t03 en p03 =', T_t03, p_t03)
 print('de waarde voor de pressure ratio tussen de stages= ', pr_ratio_stage*pr_ratio_stage2*pr_ratio_stage3)
+
+#Area calculations first stage
+Vm1 = atan(x[2])*U_s          # ik kom niet uit Vm (ik zie even de trigonometry niet)
+M1 = Vm1/(sqrt(k_a*R*T_t01))
+T1 = T_t01*(1+(k_a-1)/2 * M**2)**-1
+p1 = p_t01*(1+(k_a-1)/2 * M**2)**(-k_a/(k_a-1))
+rho1 = p1/(R*T1)
+A1 = m_dot/(rho1*Vm1)
+r1 = sqrt((np.pi*r0**2 - A1)/np.pi)
+print(r0)
+print(r1)

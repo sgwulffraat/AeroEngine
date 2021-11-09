@@ -170,8 +170,7 @@ while i < 10:
             v_18 = sqrt(2*c_p_a*(T_t21-T_18))
             F_bypass = m_dot_bypass * (v_18 - v_fs)
             v_19eff = v_18
-            bpchoked = False
-            #print("Bypasss nozzle is not choked")
+            print("Bypasss nozzle is not choked")
 
         ### Overall Performance ###
         F_N = F_core + F_bypass
