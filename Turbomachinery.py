@@ -74,6 +74,7 @@ T_t5 = T_combexit - (W_req_C / (n_mech * m_dot_4 * c_p_g))
 p_t5 = p_t4*(1 - 1/n_is_T*(1- T_t5/T_combexit)) ** (k_g/(k_g - 1))
 
 
+
 ### Core nozzle conditions ###
 e_c = critPR(n_nozzle, k_g)
 PR_noz = p_t5/p_a
@@ -137,5 +138,12 @@ A = np.array([[-phi, 0, 0, phi], [-phi, 0, 0, 0], [-1, 0, 1, 0], [0, 1, 0 ,-1]])
 b = np.array([[psi - 1], [r_c - 1 + psi/2], [-1/phi], [1/phi]])
 x = np.linalg.solve(A, b)
 
-print("de waarde voor u =", U_s)
 print("x = ", np.arctan(x)*180/np.pi)
+
+#interstage thermodynamics properties
+T_t01 = (w)/(m_dot*c_p_a) + T_t
+p_t01 = p_t*(T_t01/T_t)**((k_a)/(k_a - 1))
+pr_ratio_stage = p_t01/p_t
+
+print('de waarde voor t en p =', T_t01, p_t01)
+print('de waarde voor de pressure ratio tussen de stages= ', pr_ratio_stage)
