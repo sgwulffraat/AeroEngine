@@ -223,4 +223,42 @@ print(r3)
 
 #hs diagram for 3 stages
 air = pyro.get('ig.air')
-p11 = p_t
+p1 = p_t
+T1 = T_t
+p2 = p_t01
+T2 = T_t01
+p3 = p_t02
+T3 = T_t02
+p4 = p_t03
+T4 = T_t03
+pyro.config['unit_temperature'] = 'K'
+pyro.config['unit_pressure'] = 'Pa'
+
+s1 = air.s(T1,p1)
+s2 = air.s(T2,p2)
+s3 = air.s(T3,p3)
+s4 = air.s(T4,p4)
+
+h1 = air.h(T1,p1) + 60
+h2 = air.h(T2,p2) + 60
+h3 = air.h(T3,p3) + 60
+h4 = air.h(T4,p4) + 60
+
+plt.plot([s1,s2],[h1,h2],'r',linewidth=1.5)
+plt.plot([s2,s3],[h2,h3],'b',linewidth=1.5)
+plt.plot([s3,s4],[h3,h4],'y',linewidth=1.5)
+plt.annotate("Stage 1", (s1, h1), textcoords="offset points", xytext=(55, 0), ha='right')
+plt.annotate("Stage 2", (s2, h2), textcoords="offset points", xytext=(-5, 0), ha='right')
+plt.annotate("Stage 3", (s3, h3), textcoords="offset points", xytext=(-5, 0), ha='right')
+
+
+
+plt.axis()
+
+plt.xlabel('Entropy, s (kJ/kg/K)')
+plt.ylabel('Enthalpy, h (J/kg)')
+plt.grid('on')
+
+plt.title('Interstage Compressor h-s diagram ')
+
+plt.show()
