@@ -127,11 +127,10 @@ r_c = 0.5
 power = W_req_C
 
 w =  power/(m_dot*stages)
-print('w given',w)
 U_s = sqrt((w)/(psi))
 lambda_s = (2*w)/(U_s**2)
 v_m = phi*U_s
-r0 = U_s/omega
+r_out = U_s/omega
 
 #velocity triangles
 
@@ -139,27 +138,27 @@ A = np.array([[-phi, 0, 0, phi], [-phi, 0, 0, 0], [-1, 0, 1, 0], [0, 1, 0 ,-1]])
 b = np.array([[psi - 1], [r_c - 1 + psi/2], [-1/phi], [1/phi]])
 x = np.linalg.solve(A, b)
 xr = np.arctan(x)
-print("x = ", xr*(180/np.pi))
+
 
 #Calculate Dimensional Velocities
 Vm1 = phi * U_s
-print(Vm1)
 V1 = Vm1 / np.cos(xr[0])
 W1 = Vm1 / np.cos(xr[2])
 Vm2 = Vm1
 V2 = Vm2 / np.cos(xr[1])
 W2 = Vm2 / np.cos(xr[3])
 Vt1 = Vm1 * np.tan(xr[0])
-print(Vt1)
 Vt2 = Vm2 * np.tan(xr[1])
 dVt = Vt2 - Vt1
 w = U_s * dVt
-print('w calculated =',w)
+
 
 
 
 
 #interstage thermodynamics properties
+
+#after first stage
 n_is_Cs = 0.8536
 W_req_Cs = W_req_C
 T_t01 = (W_req_Cs)/(stages*m_dot*c_p_a) + T_t
@@ -168,35 +167,53 @@ Ts_01 = T_t01 - (k_a-1)/2*(Vm1*Vm1/k_a/R)
 M_01 = Vm1 / np.sqrt(k_a*R*Ts_01)
 ps_01 = p_t01 * (1+((k_a-1)/2)*M_01*M_01)**(-k_a/(k_a-1))
 rho_01 = ps_01 / R / Ts_01
-print('rho =',rho_01)
 pr_ratio_stage = p_t01/p_t
 
+#after second stage
 T_t02 = (W_req_Cs)/(stages*m_dot*c_p_a) + T_t01
 p_t02 = p_t01*((n_is_Cs*(T_t02-T_t01)/T_t01)+1)**(k_a/(k_a - 1))
+Ts_02 = T_t02 - (k_a-1)/2*(Vm1*Vm1/k_a/R)
+M_02 = Vm1 / np.sqrt(k_a*R*Ts_02)
+ps_02 = p_t02 * (1+((k_a-1)/2)*M_02*M_02)**(-k_a/(k_a-1))
+rho_02 = ps_02 / R / Ts_02
 pr_ratio_stage2 = p_t02/p_t01
 
+#after third stage
 T_t03 = (W_req_Cs)/(stages*m_dot*c_p_a) + T_t02
 p_t03 = p_t02*((n_is_Cs*(T_t03-T_t02)/T_t02)+1)**(k_a/(k_a - 1))
+Ts_03 = T_t03 - (k_a-1)/2*(Vm1*Vm1/k_a/R)
+M_03 = Vm1 / np.sqrt(k_a*R*Ts_03)
+ps_03 = p_t03 * (1+((k_a-1)/2)*M_03*M_03)**(-k_a/(k_a-1))
+rho_03 = ps_03 / (R * Ts_03)
 pr_ratio_stage3 = p_t03/p_t02
 
-print('de waarde voor t01 en p01 =', T_t01, p_t01)
-print('de waarde voor t02 en p02 =', T_t02, p_t02)
-print('de waarde voor t03 en p03 =', T_t03, p_t03)
-print('de waarde voor de pressure ratio tussen de stages= ', pr_ratio_stage*pr_ratio_stage2*pr_ratio_stage3)
+# print('de waarde voor t01 en p01 =', T_t01, p_t01)
+# print('de waarde voor t02 en p02 =', T_t02, p_t02)
+# print('de waarde voor t03 en p03 =', T_t03, p_t03)
+# print('de waarde voor de pressure ratio tussen de stages= ', pr_ratio_stage*pr_ratio_stage2*pr_ratio_stage3)
 
 #Area calculations first stage
+#Ts_ref = T_t - (k_a-1)/2*(Vm1*Vm1/k_a/R)
+#M_ref = Vm1 / np.sqrt(k_a*R*Ts_ref)
+#print('Mref=', M_ref)
+Ts_00 = T_t*(1+(k_a-1)/2 * M**2)**-1
+ps_00 = p_t*(1+(k_a-1)/2 * M**2)**(-k_a/(k_a-1))
+rho00 = ps_00/(R*Ts_00)
+A00 = m_dot/(rho00*M*sqrt(R*k_a*Ts_00))
+r00 = sqrt((np.pi*r_out**2 - A00)/np.pi)
 
+A1 = m_dot/(rho_01*Vm1)
+r1 = sqrt((np.pi*r_out**2 - A1)/np.pi)
 
+A2 = m_dot/(rho_02*Vm1)
+r2 = sqrt((np.pi*r_out**2 - A2)/np.pi)
 
+A3 = m_dot/(rho_03*Vm1)
+r3 = sqrt((np.pi*r_out**2 - A3)/np.pi)
 
-
-
-
-M1 = Vm1/(sqrt(k_a*R*T_t01))
-T1 = T_t01*(1+(k_a-1)/2 * M**2)**-1
-p1 = p_t01*(1+(k_a-1)/2 * M**2)**(-k_a/(k_a-1))
-rho1 = p1/(R*T1)
-A1 = m_dot/(rho1*Vm1)
-r1 = sqrt((np.pi*r0**2 - A1)/np.pi)
-print(r0)
+print("r:")
+print(r_out)
+print(r00)
 print(r1)
+print(r2)
+print(r3)
