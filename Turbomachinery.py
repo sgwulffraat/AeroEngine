@@ -1,12 +1,14 @@
 from math import *
 import numpy as np
 import pandas as pd
+import pyromat as pyro
+import matplotlib.pyplot as plt
 
 ### Inputs ####
 M = 0.78
 h = 0               #m
 m_dot = 23.81       #kg/s
-# m_fuel = 0.4267     #kg/s
+#m_fuel = 0.4267     #kg/s
 T_combexit = 1150    #K
 PR_comp = 5.5
 n_is_C = 0.83
@@ -64,7 +66,7 @@ T_t2 = isentropcomp_T(T_t, n_is_C, p_t, p_t2, k_a)
 W_req_C = m_dot * c_p_a * (T_t2 - T_t)
 
 ### Combustion conditions ###
-     #T_combexit = T_t2 + (m_fuel * n_comb * LHV*10**6)/(m_dot*c_p_g)
+#T_combexit = T_t2 + (m_fuel * n_comb * LHV*10**6)/(m_dot*c_p_g)
 m_fuel = (m_dot * c_p_g * (T_combexit - T_t2)) / (n_comb * LHV *10**6)
 p_t4 = PR_comb * p_t2
 m_dot_4 = m_fuel + m_dot
@@ -95,7 +97,8 @@ else:
     p_8 = p_a
     T_78 = isentropexp_T(T_t5, n_nozzle, p_t5, p_a, k_g)
     if T_78 > 0:
-        v_8 = sqrt(2 * c_p_g * (T_78))
+        T_8 = T_t5 + T_78
+        v_8 = sqrt(2 * c_p_g * (T_8))
         v_9eff = v_8
         F_N = m_dot_4 * (v_8 - v_fs)
         F_gross = m_dot_4 * v_8
@@ -112,7 +115,7 @@ df = pd.DataFrame(data, index=['Inlet', '3', '4', '5', '8'])
 
 print(T_combexit)
 print(F_gross)
-print(A_ratio)
+#print(A_ratio)
 
 print(df)
 
@@ -217,3 +220,7 @@ print(r00)
 print(r1)
 print(r2)
 print(r3)
+
+#hs diagram for 3 stages
+air = pyro.get('ig.air')
+p11 = p_t
