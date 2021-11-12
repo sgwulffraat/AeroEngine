@@ -127,6 +127,7 @@ r_c = 0.5
 power = W_req_C
 
 w =  power/(m_dot*stages)
+print('w given',w)
 U_s = sqrt((w)/(psi))
 lambda_s = (2*w)/(U_s**2)
 v_m = phi*U_s
@@ -137,14 +138,37 @@ r0 = U_s/omega
 A = np.array([[-phi, 0, 0, phi], [-phi, 0, 0, 0], [-1, 0, 1, 0], [0, 1, 0 ,-1]])
 b = np.array([[psi - 1], [r_c - 1 + psi/2], [-1/phi], [1/phi]])
 x = np.linalg.solve(A, b)
+xr = np.arctan(x)
+print("x = ", xr*(180/np.pi))
 
-print("x = ", np.arctan(x)*180/np.pi)
+#Calculate Dimensional Velocities
+Vm1 = phi * U_s
+print(Vm1)
+V1 = Vm1 / np.cos(xr[0])
+W1 = Vm1 / np.cos(xr[2])
+Vm2 = Vm1
+V2 = Vm2 / np.cos(xr[1])
+W2 = Vm2 / np.cos(xr[3])
+Vt1 = Vm1 * np.tan(xr[0])
+print(Vt1)
+Vt2 = Vm2 * np.tan(xr[1])
+dVt = Vt2 - Vt1
+w = U_s * dVt
+print('w calculated =',w)
+
+
+
 
 #interstage thermodynamics properties
 n_is_Cs = 0.8536
 W_req_Cs = W_req_C
 T_t01 = (W_req_Cs)/(stages*m_dot*c_p_a) + T_t
 p_t01 = p_t*((n_is_Cs*(T_t01-T_t)/T_t)+1)**(k_a/(k_a - 1))
+Ts_01 = T_t01 - (k_a-1)/2*(Vm1*Vm1/k_a/R)
+M_01 = Vm1 / np.sqrt(k_a*R*Ts_01)
+ps_01 = p_t01 * (1+((k_a-1)/2)*M_01*M_01)**(-k_a/(k_a-1))
+rho_01 = ps_01 / R / Ts_01
+print('rho =',rho_01)
 pr_ratio_stage = p_t01/p_t
 
 T_t02 = (W_req_Cs)/(stages*m_dot*c_p_a) + T_t01
@@ -161,7 +185,13 @@ print('de waarde voor t03 en p03 =', T_t03, p_t03)
 print('de waarde voor de pressure ratio tussen de stages= ', pr_ratio_stage*pr_ratio_stage2*pr_ratio_stage3)
 
 #Area calculations first stage
-Vm1 = atan(x[2])*U_s          # ik kom niet uit Vm (ik zie even de trigonometry niet)
+
+
+
+
+
+
+
 M1 = Vm1/(sqrt(k_a*R*T_t01))
 T1 = T_t01*(1+(k_a-1)/2 * M**2)**-1
 p1 = p_t01*(1+(k_a-1)/2 * M**2)**(-k_a/(k_a-1))
