@@ -93,9 +93,8 @@ if PR_noz > e_c:
     print("Core nozzle is choked")
 else:
     p_8 = p_a
-    T_78 = isentropexp_T(T_t5, n_nozzle, p_t5, p_a, k_g)
-    if T_78 > 0:
-        T_8 = T_t5 + T_78
+    T_8 = isentropexp_T(T_t5, n_nozzle, p_t5, p_a, k_g)
+    if T_8 > 0:
         v_8 = sqrt(2 * c_p_g * (T_8))
         v_9eff = v_8
         F_N = m_dot_4 * (v_8 - v_fs)
