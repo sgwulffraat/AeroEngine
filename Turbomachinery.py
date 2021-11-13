@@ -1,5 +1,6 @@
 from math import *
 import numpy as np
+import matplotlib.pyplot as plt
 import pandas as pd
 import pyromat as pyro
 import matplotlib.pyplot as plt
@@ -27,9 +28,6 @@ c_p_a = 1000        #J/kg K
 c_p_g = 1150        #J/kg K
 k_a = 1.4
 k_g = 1.33
-
-
-
 
 ### Functions ###
 def isentropcomp_T(T1, n_is, p1, p2, k):
@@ -155,7 +153,38 @@ Vt2 = Vm2 * np.tan(xr[1])
 dVt = Vt2 - Vt1
 w = U_s * dVt
 
+V1vector = [float(V1*np.sin(xr[0])),float(-V1*np.cos(xr[0]))]
+W1vector = [float(W1*np.sin(xr[2])),float(-W1*np.cos(xr[2]))]
 
+ax = plt.axes()
+plt.axvline(0,linestyle='--',color='grey')
+ax.arrow(0,0,V1vector[0],V1vector[1],length_includes_head=True,width=3,head_width=8,head_length=20,fc='red',ec='red',label='V1')
+ax.arrow(0,0,W1vector[0],W1vector[1],length_includes_head=True,width=3,head_width=8,head_length=20,fc='blue',ec='blue',label='W1')
+ax.arrow(W1vector[0],W1vector[1],(V1vector[0]-W1vector[0]),0,length_includes_head=True,width=3,head_width=8,head_length=20,fc='green',ec='green',label='U')
+ax.text(7,-30,r'$\alpha_1$')
+ax.text(-27,-30,r'$\beta_1$')
+plt.title('Velocity triangle in front of the rotor')
+plt.legend()
+plt.ylabel('Axial velocity [m/s]')
+plt.xlabel('Tangential velocity [m/s]')
+plt.show()
+
+
+V2vector = [float(V2*np.sin(xr[1])),float(-V2*np.cos(xr[1]))]
+W2vector = [float(W2*np.sin(xr[3])),float(-W2*np.cos(xr[3]))]
+
+ax = plt.axes()
+ax.arrow(0,0,V2vector[0],V2vector[1],length_includes_head=True,width=3,head_width=8,head_length=20,fc='red',ec='red',label='V2')
+ax.arrow(0,0,W2vector[0],W2vector[1],length_includes_head=True,width=3,head_width=8,head_length=20,fc='blue',ec='blue',label='W2')
+ax.arrow(W2vector[0],W2vector[1],(V2vector[0]-W2vector[0]),0,length_includes_head=True,width=3,head_width=8,head_length=20,fc='green',ec='green',label='U')
+ax.text(7,-30,r'$\alpha_2$')
+ax.text(-23,-30,r'$\beta_2$')
+plt.axvline(0,linestyle='--',color='grey')
+plt.title('Velocity triangle after the rotor')
+plt.legend()
+plt.ylabel('Axial velocity [m/s]')
+plt.xlabel('Tangential velocity [m/s]')
+plt.show()
 
 
 
