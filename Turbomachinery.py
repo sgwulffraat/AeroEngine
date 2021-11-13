@@ -2,7 +2,7 @@ from math import *
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-import pyromat as pyro
+#import pyromat as pyro
 import matplotlib.pyplot as plt
 
 ### Inputs ####
@@ -225,13 +225,13 @@ pr_ratio_stage3 = p_t03/p_t02
 # print('de waarde voor de pressure ratio tussen de stages= ', pr_ratio_stage*pr_ratio_stage2*pr_ratio_stage3)
 
 #Area calculations first stage
-#Ts_ref = T_t - (k_a-1)/2*(Vm1*Vm1/k_a/R)
-#M_ref = Vm1 / np.sqrt(k_a*R*Ts_ref)
+Ts_ref = T_t - (k_a-1)/2*(Vm1*Vm1/k_a/R)
+M_ref = Vm1 / np.sqrt(k_a*R*Ts_ref)
 #print('Mref=', M_ref)
-Ts_00 = T_t*(1+(k_a-1)/2 * M**2)**-1
-ps_00 = p_t*(1+(k_a-1)/2 * M**2)**(-k_a/(k_a-1))
-rho00 = ps_00/(R*Ts_00)
-A00 = m_dot/(rho00*M*sqrt(R*k_a*Ts_00))
+#Ts_00 = T_t*(1+(k_a-1)/2 * M**2)**-1
+ps_00 = p_t*(1+(k_a-1)/2 * M_ref**2)**(-k_a/(k_a-1))
+rho00 = ps_00/(R*Ts_ref)
+A00 = m_dot/(rho00*M_ref*sqrt(R*k_a*Ts_ref))
 r00 = sqrt((np.pi*r_out**2 - A00)/np.pi)
 
 A1 = m_dot/(rho_01*Vm1)
@@ -249,7 +249,7 @@ print(r00)
 print(r1)
 print(r2)
 print(r3)
-
+""""
 #hs diagram for 3 stages
 air = pyro.get('ig.air')
 p1 = p_t
@@ -291,3 +291,50 @@ plt.grid('on')
 plt.title('Interstage Compressor h-s diagram ')
 
 plt.show()
+"""
+#Plot aero-thermal flow properties
+Stages = [0,1,2,3]
+Rotor = [1,2,3]
+
+Tt_ratio00 = T_t / T_t
+Tt_ratio01 = T_t01 / T_t
+Tt_ratio02 = T_t02 / T_t
+Tt_ratio03 = T_t03 / T_t
+Tt_ratio = [float(Tt_ratio00),float(Tt_ratio01),float(Tt_ratio02),float(Tt_ratio03)]
+
+
+Pt_ratio00 = p_t / p_t
+Pt_ratio01 = p_t01 / p_t
+Pt_ratio02 = p_t02 / p_t
+Pt_ratio03 = p_t03 / p_t
+Pt_ratio = [float(Pt_ratio00),float(Pt_ratio01),float(Pt_ratio02),float(Pt_ratio03)]
+
+P_ratio00 = ps_00 / p_t
+P_ratio01 = ps_01 / p_t
+P_ratio02 = ps_02 / p_t
+P_ratio03 = ps_03 / p_t
+P_ratio = [float(P_ratio00),float(P_ratio01),float(P_ratio02),float(P_ratio03)]
+
+beta1 = T_t01 / T_t
+beta2 = T_t02 / T_t01
+beta3 = T_t03 / T_t02
+beta = [beta1,beta2,beta3]
+
+fig, axs = plt.subplots(2,2)
+fig.suptitle('Plots of aero-thermal flow properties')
+axs[0, 0].plot(Stages,Tt_ratio)
+plt.setp(axs[0,0],xlabel="# stage",ylabel=r'$\frac{T_{t}}{T_{t,0}}$')
+axs[0,0].set_title("Total temperature over reference total temperature")
+axs[0, 1].plot(Stages,Pt_ratio)
+axs[0,1].set_title("Total pressure over reference total pressure")
+plt.setp(axs[0,1],xlabel="# stage",ylabel=r'$\frac{p_{t}}{p_{t,0}}$')
+axs[1, 0].plot(Stages,P_ratio)
+axs[1,0].set_title("Static pressure over reference total pressure")
+plt.setp(axs[1,0],xlabel="# stage",ylabel=r'$\frac{p_{s}}{p_{t,0}}$')
+axs[1, 1].plot(Rotor,beta)
+axs[1,1].set_title(r"$\beta_{tt}$ over rotor stages")
+plt.setp(axs[1,1],xlabel="# stage",ylabel=r'$\beta_{tt}$')
+plt.show()
+
+
+
