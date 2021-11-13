@@ -1,8 +1,7 @@
 from math import *
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
-#import pyromat as pyro
+import pyromat as pyro
 import matplotlib.pyplot as plt
 
 ### Inputs ####
@@ -110,22 +109,8 @@ data = {'Temperature [K] ':[T_t, T_t2, T_combexit,T_t5 ,T_8],
         'Mass flow [kg/s]':[m_dot, m_dot, m_dot_4, m_dot_4, m_dot_4]}
 df = pd.DataFrame(data, index=['Inlet', '3', '4', '5', '8'])
 
-print(T_combexit)
-print(F_gross)
-#print(A_ratio)
-
-print(df)
-
-#Design parameters
-RPM = 13800
-omega = RPM*(2*pi)/(60)
-psi = 0.25
-phi = 0.35
-stages = 3
-r_c = 0.5
-
+#### Design Computation ####
 power = W_req_C
-
 w =  power/(m_dot*stages)
 U_s = sqrt((w)/(psi))
 lambda_s = (2*w)/(U_s**2)
@@ -133,7 +118,6 @@ v_m = phi*U_s
 r_out = U_s/omega
 
 #velocity triangles
-
 A = np.array([[-phi, 0, 0, phi], [-phi, 0, 0, 0], [-1, 0, 1, 0], [0, 1, 0 ,-1]])
 b = np.array([[psi - 1], [r_c - 1 + psi/2], [-1/phi], [1/phi]])
 x = np.linalg.solve(A, b)
@@ -152,6 +136,7 @@ Vt2 = Vm2 * np.tan(xr[1])
 dVt = Vt2 - Vt1
 w = U_s * dVt
 
+## Plotting Velocity triangles ##
 V1vector = [float(V1*np.sin(xr[0])),float(-V1*np.cos(xr[0]))]
 W1vector = [float(W1*np.sin(xr[2])),float(-W1*np.cos(xr[2]))]
 
@@ -167,7 +152,6 @@ plt.legend()
 plt.ylabel('Axial velocity [m/s]')
 plt.xlabel('Tangential velocity [m/s]')
 plt.show()
-
 
 V2vector = [float(V2*np.sin(xr[1])),float(-V2*np.cos(xr[1]))]
 W2vector = [float(W2*np.sin(xr[3])),float(-W2*np.cos(xr[3]))]
@@ -187,7 +171,7 @@ plt.show()
 
 
 
-#interstage thermodynamics properties
+#### Interstage Thermodynamics Properties ####
 
 #after first stage
 n_is_Cs = 0.8536
@@ -218,16 +202,10 @@ ps_03 = p_t03 * (1+((k_a-1)/2)*M_03*M_03)**(-k_a/(k_a-1))
 rho_03 = ps_03 / (R * Ts_03)
 pr_ratio_stage3 = p_t03/p_t02
 
-# print('de waarde voor t01 en p01 =', T_t01, p_t01)
-# print('de waarde voor t02 en p02 =', T_t02, p_t02)
-# print('de waarde voor t03 en p03 =', T_t03, p_t03)
-# print('de waarde voor de pressure ratio tussen de stages= ', pr_ratio_stage*pr_ratio_stage2*pr_ratio_stage3)
 
-#Area calculations first stage
+## Area calculations first stage ##
 Ts_ref = T_t - (k_a-1)/2*(Vm1*Vm1/k_a/R)
 M_ref = Vm1 / np.sqrt(k_a*R*Ts_ref)
-#print('Mref=', M_ref)
-#Ts_00 = T_t*(1+(k_a-1)/2 * M**2)**-1
 ps_00 = p_t*(1+(k_a-1)/2 * M_ref**2)**(-k_a/(k_a-1))
 rho00 = ps_00/(R*Ts_ref)
 A00 = m_dot/(rho00*M_ref*sqrt(R*k_a*Ts_ref))
@@ -242,14 +220,8 @@ r2 = sqrt((np.pi*r_out**2 - A2)/np.pi)
 A3 = m_dot/(rho_03*Vm1)
 r3 = sqrt((np.pi*r_out**2 - A3)/np.pi)
 
-print("r:")
-print(r_out)
-print(r00)
-print(r1)
-print(r2)
-print(r3)
-""""
-#hs diagram for 3 stages
+
+### hs diagram for 3 stages ###
 air = pyro.get('ig.air')
 p1 = p_t
 T1 = T_t
@@ -290,8 +262,8 @@ plt.grid('on')
 plt.title('Interstage Compressor h-s diagram ')
 
 plt.show()
-"""
-#Plot aero-thermal flow properties
+
+## Aero-thermal flow properties ##
 Stages = [0,1,2,3]
 Rotor = [1,2,3]
 
@@ -319,6 +291,7 @@ beta2 = T_t02 / T_t01
 beta3 = T_t03 / T_t02
 beta = [beta1,beta2,beta3]
 
+## Plotting ##
 fig, axs = plt.subplots(2,2)
 fig.suptitle('Plots of aero-thermal flow properties')
 axs[0, 0].plot(Stages,Tt_ratio)
@@ -335,7 +308,7 @@ axs[1,1].set_title(r"$\beta_{tt}$ over rotor stages")
 plt.setp(axs[1,1],xlabel="# stage",ylabel=r'$\beta_{tt}$')
 plt.show()
 
-## Meriodial Gas Path ##
+### Meriodial Gas Path ###
 ## Geometry ##
 wR1 = (r_out-r1)/1.5
 wR2 = (r_out-r2)/1.5
@@ -360,10 +333,8 @@ yR3 = [r3-(r3-r2)/3, r_out, r_out, r3, r3-(r3-r2)/3]
 xS3 = [2*wR1 + 2*wR2 + wR3 + 7*ds, 2*wR1 + 2*wR2 + wR3 + 7*ds, 2*wR1 + 2*wR2 + 2*wR3 + 7*ds, 2*wR1 + 2*wR2 + 2*wR3 + 7*ds, 2*wR1 + 2*wR2 + wR3 + 7*ds]
 yS3 = [r3, r_out, r_out, r3+(r3-r2)/3, r3]
 
+## Plotting Meridional Path ##
 plt.figure(0)
-# plt.axhline(y = r_out+0.005, color = 'black', linestyle = '-')
-# plt.axhline(y = r_out+0.02, color = 'black', linestyle = '-')
-# plt.axhline(y = 0, color = 'black', linestyle = '--')
 plt.plot(xR1, yR1, marker = 'o', color = 'tab:red', label = 'Rotor')
 plt.plot(xS1, yS1, marker = 'o', color = 'tab:blue', label = 'Stator')
 plt.plot(xR2, yR2, marker = 'o', color = 'tab:red')
