@@ -336,5 +336,48 @@ axs[1,1].set_title(r"$\beta_{tt}$ over rotor stages")
 plt.setp(axs[1,1],xlabel="# stage",ylabel=r'$\beta_{tt}$')
 plt.show()
 
+## Meriodial Gas Path ##
+## Geometry ##
+wR1 = (r_out-r1)/1.5
+wR2 = (r_out-r2)/1.5
+wR3 = (r_out-r3)/1.5
+ds = 0.01
+
+## Stage 1 ##
+xR1 = [0, 0, wR1, wR1, 0]
+yR1 = [r1-(r2-r1)/2, r_out, r_out, r1, r1-(r2-r1)/2]
+xS1 = [wR1 + ds, wR1 + ds, 2 * wR1 + ds, 2 * wR1 + ds, wR1 + ds]
+yS1 = [r1, r_out, r_out, r1+(r2-r1)/2, r1]
+
+## Stage 2 ##
+xR2 = [2*wR1 + 3* ds, 2*wR1 + 3*ds, 2*wR1 + wR2 + 3*ds, 2*wR1 + wR2 + 3*ds, 2*wR1 + 3*ds]
+yR2 = [r2-(r2-r1)/3, r_out, r_out, r2, r2-(r2-r1)/3]
+xS2 = [2*wR1 + wR2 + 4*ds, 2*wR1 + wR2 + 4*ds, 2*wR1 + 2*wR2 + 4*ds, 2*wR1 + 2*wR2 + 4*ds, 2*wR1 + wR2 + 4*ds]
+yS2 = [r2, r_out, r_out, r2+(r2-r1)/3, r2]
+
+## Stage 3 ##
+xR3 = [2*wR1 + 2*wR2 + 6*ds, 2*wR1 + 2*wR2 + 6*ds, 2*wR1 + 2*wR2 + wR3 + 6*ds, 2*wR1 + 2*wR2 + wR3 + 6*ds, 2*wR1 + 2*wR2 + 6*ds]
+yR3 = [r3-(r3-r2)/3, r_out, r_out, r3, r3-(r3-r2)/3]
+xS3 = [2*wR1 + 2*wR2 + wR3 + 7*ds, 2*wR1 + 2*wR2 + wR3 + 7*ds, 2*wR1 + 2*wR2 + 2*wR3 + 7*ds, 2*wR1 + 2*wR2 + 2*wR3 + 7*ds, 2*wR1 + 2*wR2 + wR3 + 7*ds]
+yS3 = [r3, r_out, r_out, r3+(r3-r2)/3, r3]
+
+plt.figure(0)
+# plt.axhline(y = r_out+0.005, color = 'black', linestyle = '-')
+# plt.axhline(y = r_out+0.02, color = 'black', linestyle = '-')
+# plt.axhline(y = 0, color = 'black', linestyle = '--')
+plt.plot(xR1, yR1, marker = 'o', color = 'tab:red', label = 'Rotor')
+plt.plot(xS1, yS1, marker = 'o', color = 'tab:blue', label = 'Stator')
+plt.plot(xR2, yR2, marker = 'o', color = 'tab:red')
+plt.plot(xS2, yS2, marker = 'o', color = 'tab:blue')
+plt.plot(xR3, yR3, marker = 'o', color = 'tab:red')
+plt.plot(xS3, yS3, marker = 'o', color = 'tab:blue')
+plt.xlabel('Axial length [m]')
+plt.ylabel('Radius [m]')
+plt.ylim(-0.05, r_out + 0.1)
+plt.xlim(-0.05, r_out + 0.1)
+plt.grid()
+plt.legend()
+plt.show()
+
 
 
