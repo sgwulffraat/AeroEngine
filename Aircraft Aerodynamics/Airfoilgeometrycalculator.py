@@ -38,7 +38,7 @@ def airfoil_geometery(Xdata, Ydata, AoA):
     # Compute angle of panel normal w.r.t. horizontal and include AoA
     AoAr = AoA*np.pi/180
     delta = phi + (np.pi / 2)  # Panel normal angle [rad]
-    beta = delta - (AoAr * (np.pi / 180))  # Angle between freestream and panel normal [rad]
+    beta = delta - (AoAr)  # Angle between freestream and panel normal [rad]
     beta[beta > 2 * np.pi] = beta[beta > 2 * np.pi] - 2 * np.pi
 
-    return XC, YC, S, phi, N_pan, beta
+    return XC, YC, S, phi, beta, N_pan
