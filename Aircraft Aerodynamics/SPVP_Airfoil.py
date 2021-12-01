@@ -28,7 +28,9 @@ from matplotlib import path
 from XFOIL import XFOIL
 from Airfoilselector import NACAcalculator
 from Airfoilimporter import import_airfoil
+from COMPUTE_IJ_SPM import COMPUTE_IJ_SPM
 from COMPUTE_KL_VPM import COMPUTE_KL_VPM
+from STREAMLINE_SPM import STREAMLINE_SPM
 from STREAMLINE_VPM import STREAMLINE_VPM
 from COMPUTE_CIRCULATION import COMPUTE_CIRCULATION
 
@@ -47,8 +49,8 @@ NACA = '0012'  # NACA airfoil to load [####]
 AoAR = AoA * (np.pi / 180)  # Angle of attack [rad]
 
 # Plotting flags
-flagPlot = [0,  # Airfoil with panel normal vectors
-            0,  # Geometry boundary pts, control pts, first panel, second panel
+flagPlot = [1,  # Airfoil with panel normal vectors
+            1,  # Geometry boundary pts, control pts, first panel, second panel
             1,  # Cp vectors at airfoil surface panels
             1,  # Pressure coefficient comparison (XFOIL vs. VPM)
             0,  # Airfoil streamlines
@@ -131,52 +133,66 @@ delta = phi + (np.pi / 2)  # Angle from positive X-axis to outward normal vector
 beta = delta - AoAR  # Angle between freestream vector and outward normal vector [rad]
 beta[beta > 2 * np.pi] = beta[beta > 2 * np.pi] - 2 * np.pi  # Make all panel angles between 0 and 2pi [rad]
 
-# %% COMPUTE VORTEX PANEL STRENGTHS - REF [5]
+# %% COMPUTE SOURCE AND VORTEX PANEL STRENGTHS - REF [10]
 
-# Geometric integral (normal [K] and tangential [L])
-# - Refs [2] and [3]
-K, L = COMPUTE_KL_VPM(XC, YC, XB, YB, phi, S)  # Compute geometric integrals
+# Geometric integrals for SPM and VPM (normal [I,K] and tangential [J,L])
+# - Refs [2], [3], [6], and [7]
+I, J = COMPUTE_IJ_SPM(XC, YC, XB, YB, phi, S)  # Call COMPUTE_IJ_SPM function (Refs [2] and [3])
+K, L = COMPUTE_KL_VPM(XC, YC, XB, YB, phi, S)  # Call COMPUTE_KL_VPM function (Refs [6] and [7])
 
 # Populate A matrix
+# - Simpler option: A = I + np.pi*np.eye(numPan,numPan)
 A = np.zeros([numPan, numPan])  # Initialize the A matrix
 for i in range(numPan):  # Loop over all i panels
     for j in range(numPan):  # Loop over all j panels
         if (i == j):  # If the panels are the same
-            A[i, j] = 0  # Set A equal to zero
+            A[i, j] = np.pi  # Set A equal to pi
         else:  # If panels are not the same
-            A[i, j] = -K[i, j]  # Set A equal to negative geometric integral
+            A[i, j] = I[i, j]  # Set A equal to I
+
+# Right column of A matrix
+newAV = np.zeros((numPan, 1))  # Used to enlarge the A matrix to account for gamma column
+A = np.hstack((A, newAV))  # Horizontally stack the A matrix with newAV to get enlarged matrix
+for i in range(numPan):  # Loop over all i panels (rows)
+    A[i, numPan] = -sum(K[i, :])  # Add gamma term to right-most column of A matrix
+
+# Bottom row of A matrix
+newAH = np.zeros((1, numPan + 1))  # Used to enlarge the A matrix to account for Kutta condition equation
+A = np.vstack((A, newAH))  # Vertically stack the A matrix with newAH to get enlarged matrix
+for j in range(numPan):  # Loop over all j panels (columns)
+    A[numPan, j] = J[0, j] + J[numPan - 1, j]  # Source contribution of Kutta condition equation
+A[numPan, numPan] = -(sum(L[0, :] + L[numPan - 1, :])) + 2 * np.pi  # Vortex contribution of Kutta condition equation
 
 # Populate b array
+# - Simpler option: b = -Vinf*2*np.pi*np.cos(beta)
 b = np.zeros(numPan)  # Initialize the b array
-for i in range(numPan):  # Loop over all panels
+for i in range(numPan):  # Loop over all i panels (rows)
     b[i] = -Vinf * 2 * np.pi * np.cos(beta[i])  # Compute RHS array
 
-# Satisfy the Kutta condition
-pct = 100  # Panel replacement percentage
-panRep = int((pct / 100) * numPan) - 1  # Replace this panel with Kutta condition equation
-if (panRep >= numPan):  # If we specify the last panel
-    panRep = numPan - 1  # Set appropriate replacement panel index
-A[panRep, :] = 0  # Set all colums of the replaced panel equation to zero
-A[panRep, 0] = 1  # Set first column of replaced panel equal to 1
-A[panRep, numPan - 1] = 1  # Set last column of replaced panel equal to 1
-b[panRep] = 0  # Set replaced panel value in b array equal to zero
+# Last element of b array (Kutta condition)
+b = np.append(b, -Vinf * 2 * np.pi * (
+            np.sin(beta[0]) + np.sin(beta[numPan - 1])))  # Add Kutta condition equation RHS to b array
 
-# Compute gamma values
-gamma = np.linalg.solve(A, b)  # Compute all vortex strength values
+# Compute result array
+resArr = np.linalg.solve(A, b)  # Solve system of equation for all source strengths and single vortex strength
+
+# Separate lam and gamma values from result
+lam = resArr[0:len(resArr) - 1]  # All panel source strengths
+gamma = resArr[len(resArr) - 1]  # Constant vortex strength
 
 # %% COMPUTE PANEL VELOCITIES AND PRESSURE COEFFICIENTS
 
 # Compute velocities
-Vt = np.zeros(numPan)  # Initialize tangential velocity array
-Cp = np.zeros(numPan)  # Initialize pressure coefficient array
-for i in range(numPan):  # Loop over all i panels
-    addVal = 0  # Reset summation value to zero
-    for j in range(numPan):  # Loop over all j panels
-        addVal = addVal - (gamma[j] / (2 * np.pi)) * L[i, j]  # Sum all tangential vortex panel terms
+Vt = np.zeros(numPan)  # Initialize tangential velocity
+Cp = np.zeros(numPan)  # Initialize pressure coefficient
+for i in range(numPan):  # Loop over all panels
+    term1 = Vinf * np.sin(beta[i])  # Uniform flow term
+    term2 = (1 / (2 * np.pi)) * sum(lam * J[i, :])  # Source panel terms when j is not equal to i
+    term3 = gamma / 2  # Vortex panel term when j is equal to i
+    term4 = -(gamma / (2 * np.pi)) * sum(L[i, :])  # Vortex panel terms when j is not equal to i
 
-    Vt[i] = Vinf * np.sin(beta[i]) + addVal + gamma[
-        i] / 2  # Compute tangential velocity by adding uniform flow and i=j terms
-    Cp[i] = 1 - (Vt[i] / Vinf) ** 2  # Compute pressure coefficient
+    Vt[i] = term1 + term2 + term3 + term4  # Compute tangential velocity on panel i
+    Cp[i] = 1 - (Vt[i] / Vinf) ** 2  # Compute pressure coefficient on panel i
 
 # %% COMPUTE LIFT AND MOMENT COEFFICIENTS
 
@@ -184,28 +200,27 @@ for i in range(numPan):  # Loop over all i panels
 CN = -Cp * S * np.sin(beta)  # Normal force coefficient []
 CA = -Cp * S * np.cos(beta)  # Axial force coefficient []
 
-# Compute lift, drag, and moment coefficients
+# Compute lift and moment coefficients
 CL = sum(CN * np.cos(AoAR)) - sum(CA * np.sin(AoAR))  # Decompose axial and normal to lift coefficient []
 CM = sum(Cp * (XC - 0.25) * S * np.cos(phi))  # Moment coefficient []
 
 # Print the results to the Console
 print("======= RESULTS =======")
 print("Lift Coefficient (CL)")
+print("  SPVP : %2.8f" % CL)  # From this SPVP code
 print("  K-J  : %2.8f" % (2 * sum(gamma * S)))  # From Kutta-Joukowski lift equation
-print("  VPM  : %2.8f" % CL)  # From this VPM code
-#print("  XFOIL: %2.8f" % xFoilCL)  # From XFOIL program
 print("Moment Coefficient (CM)")
-print("  VPM  : %2.8f" % CM)  # From this VPM code
-#print("  XFOIL: %2.8f" % xFoilCM)  # From XFOIL program
+print("  SPVP : %2.8f" % CM)  # From this SPVP code
 
-# %% COMPUTE STREAMLINES - REF [4]
+
+# %% COMPUTE STREAMLINES - REFS [4] and [8]
 
 if (flagPlot[4] == 1 or flagPlot[5] == 1):  # If we are plotting streamlines or pressure coefficient contours
     # Grid parameters
-    nGridX = 150  # X-grid for streamlines and contours
-    nGridY = 150  # Y-grid for streamlines and contours
-    xVals = [-0.5, 1.5]  # X-grid extents [min, max]
-    yVals = [-0.3, 0.3]  # Y-grid extents [min, max]
+    nGridX = 100  # X-grid for streamlines and contours
+    nGridY = 100  # Y-grid for streamlines and contours
+    xVals = [min(XB) - 0.5, max(XB) + 0.5]  # X-grid extents [min, max]
+    yVals = [min(YB) - 0.3, max(YB) + 0.3]  # Y-grid extents [min, max]
 
     # Streamline parameters
     slPct = 25  # Percentage of streamlines of the grid
@@ -228,10 +243,12 @@ if (flagPlot[4] == 1 or flagPlot[5] == 1):  # If we are plotting streamlines or 
 
     # Solve for grid point X and Y velocities
     for m in range(nGridX):  # Loop over X-grid points
+        print("m: %i" % m)
         for n in range(nGridY):  # Loop over Y-grid points
             XP = XX[m, n]  # Current iteration's X grid point
             YP = YY[m, n]  # Current iteration's Y grid point
-            Nx, Ny = STREAMLINE_VPM(XP, YP, XB, YB, phi, S)  # Compute Nx and Ny geometric integrals
+            Mx, My = STREAMLINE_SPM(XP, YP, XB, YB, phi, S)  # Compute streamline Mx and My values
+            Nx, Ny = STREAMLINE_VPM(XP, YP, XB, YB, phi, S)  # Compute streamline Nx and Ny values
 
             # Check if grid points are in object
             # - If they are, assign a velocity of zero
@@ -239,8 +256,10 @@ if (flagPlot[4] == 1 or flagPlot[5] == 1):  # If we are plotting streamlines or 
                 Vx[m, n] = 0  # Set X-velocity equal to zero
                 Vy[m, n] = 0  # Set Y-velocity equal to zero
             else:
-                Vx[m, n] = Vinf * np.cos(AoAR) + sum(-gamma * Nx / (2 * np.pi))  # Compute X-velocity
-                Vy[m, n] = Vinf * np.sin(AoAR) + sum(-gamma * Ny / (2 * np.pi))  # Compute Y-velocity
+                Vx[m, n] = (Vinf * np.cos(AoAR) + sum(lam * Mx / (2 * np.pi))  # Compute X-velocity
+                            + sum(-gamma * Nx / (2 * np.pi)))
+                Vy[m, n] = (Vinf * np.sin(AoAR) + sum(lam * My / (2 * np.pi))  # Compute Y-velocity
+                            + sum(-gamma * Ny / (2 * np.pi)))
 
     # Compute grid point velocity magnitude and pressure coefficient
     Vxy = np.sqrt(Vx ** 2 + Vy ** 2)  # Compute magnitude of velocity vector []
@@ -260,9 +279,11 @@ if (flagPlot[4] == 1 or flagPlot[5] == 1):  # If we are plotting streamlines or 
 
     # Print values to Console
     print("======= CIRCULATION RESULTS =======")
-    print("Sum of L   : %2.8f" % sum(gamma * S))  # Print sum of vortex strengths
-    print("Circulation: %2.8f" % Circulation)  # Print circulation
-    print("Lift Coef  : %2.8f" % (2.0 * Circulation))  # Lift coefficient from K-J equation
+    print("Sum of L     : %2.8f" % sum(lam * S))  # Print sum of vortex strengths
+    print("Sum of G     : %2.8f" % sum(gamma * S))  # Print sum of ovrtex strengths
+    print("Circulation  : %2.8f" % Circulation)  # Print circulation
+    print("K-J from G   : %2.8f" % (2 * sum(gamma * S)))  # Lift coefficient from K-J equation from gamma
+    print("K-J from Circ: %2.8f" % (2 * Circulation))  # Lift coefficient from K-J equation from circulation
 
 # %% PLOTTING
 
@@ -334,10 +355,7 @@ if (flagPlot[2] == 1):
 if (flagPlot[3] == 1):
     fig = plt.figure(4)  # Create figure
     plt.cla()  # Get ready for plotting
-    #midIndX = int(np.floor(len(xFoilCP) / 2))  # Airfoil middle index for XFOIL data
     midIndS = int(np.floor(len(Cp) / 2))  # Airfoil middle index for VPM data
-    #plt.plot(xFoilX[0:midIndX], xFoilCP[0:midIndX],'b-', label='XFOIL Upper')
-    #plt.plot(xFoilX[midIndX + 1:len(xFoilX)], xFoilCP[midIndX + 1:len(xFoilX)],'r-', label='XFOIL Lower')
     plt.plot(XC[midIndS + 1:len(XC)], Cp[midIndS + 1:len(XC)],  # Plot Cp for upper surface of airfoil from panel method
              'ks', markerfacecolor='b', label='VPM Upper')
     plt.plot(XC[0:midIndS], Cp[0:midIndS],  # Plot Cp for lower surface of airfoil from panel method
