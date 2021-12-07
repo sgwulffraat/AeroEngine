@@ -1,44 +1,12 @@
-# VORTEX PANEL METHOD - SINGLE AIRFOIL
-# Written by: JoshTheEngineer
-# YouTube   : www.youtube.com/joshtheengineer
-# Website   : www.joshtheengineer.com
-# Started   : 12/09/18 - In MATLAB
-# Updated   : 02/03/19 - Transferred from MATLAB to Python
-#                      - Works as expected
-#             02/09/20 - Added DAT airfoil loading option with XFOIL function
-# Notes     : This code is not optimized, but is instead written in such a way
-#             that it is easy to follow along with my YouTube video derivations
-#
-# Functions Needed:
-# - XFOIL.py
-# - COMPUTE_KL_VPM.py
-# - STREAMLINE_VPM.py
-# - COMPUTE_CIRCULATION.py
-#
-# Programs Needed:
-# - xfoil.exe
-#
-# Folder Needed:
-# - Airfoil_DAT_Selig: folder containing all Selig-format airfoils
 
 import numpy as np
 import math as math
 import matplotlib.pyplot as plt
-from matplotlib import path
-from XFOIL import XFOIL
 from Airfoilselector import NACAcalculator
 from Airfoilimporter import import_airfoil
 from COMPUTE_IJ_SPM import COMPUTE_IJ_SPM
 from COMPUTE_KL_VPM import COMPUTE_KL_VPM
-from STREAMLINE_SPM import STREAMLINE_SPM
-from STREAMLINE_VPM import STREAMLINE_VPM
-from COMPUTE_CIRCULATION import COMPUTE_CIRCULATION
 
-# %% KNOWNS
-
-# Flag to specify creating or loading airfoil
-flagAirfoil = [1,  # Create specified NACA airfoil in XFOIL
-               0]  # Load Selig-format airfoil from directory
 
 # User-defined knowns
 Vinf = 1  # Freestream velocity [] (just leave this at 1)
@@ -49,39 +17,10 @@ NACA = '0012'  # NACA airfoil to load [####]
 AoAR = AoA * (np.pi / 180)  # Angle of attack [rad]
 
 # Plotting flags
-flagPlot = [1,  # Airfoil with panel normal vectors
-            1,  # Geometry boundary pts, control pts, first panel, second panel
-            1,  # Cp vectors at airfoil surface panels
-            1,  # Pressure coefficient comparison (XFOIL vs. VPM)
-            0,  # Airfoil streamlines
-            0]  # Pressure coefficient contour
-
-# %% XFOIL - CREATE/LOAD AIRFOIL
-
-# PPAR menu options
-PPAR = ['170',  # "Number of panel nodes"
-        '4',  # "Panel bunching paramter"
-        '1.5',  # "TE/LE panel density ratios"
-        '1',  # "Refined area/LE panel density ratio"
-        '1 1',  # "Top side refined area x/c limits"
-        '1 1']  # "Bottom side refined area x/c limits"
-
-# Call XFOIL function to obtain the following:
-# - Airfoil coordinates
-# - Pressure coefficient along airfoil surface
-# - Lift, drag, and moment coefficients
-## xFoilResults = XFOIL(NACA, PPAR, AoA, flagAirfoil)
-
-# # Separate out results from XFOIL function results
-# afName = xFoilResults[0]  # Airfoil name
-# xFoilX = xFoilResults[1]  # X-coordinate for Cp result
-# xFoilY = xFoilResults[2]  # Y-coordinate for Cp result
-# xFoilCP = xFoilResults[3]  # Pressure coefficient
-# XB = xFoilResults[4]  # Boundary point X-coordinate
-# YB = xFoilResults[5]  # Boundary point Y-coordinate
-# xFoilCL = xFoilResults[6]  # Lift coefficient
-# xFoilCD = xFoilResults[7]  # Drag coefficient
-# xFoilCM = xFoilResults[8]  # Moment coefficient
+flagPlot = [0,  # Airfoil with panel normal vectors
+            0,  # Geometry boundary pts, control pts, first panel, second panel
+            0,  # Cp vectors at airfoil surface panels
+            1]  # Pressure coefficient comparison (XFOIL vs. VPM)
 
 # Initiate airfoil selector
 Naca = NACAcalculator()
@@ -213,78 +152,6 @@ print("Moment Coefficient (CM)")
 print("  SPVP : %2.8f" % CM)  # From this SPVP code
 
 
-# %% COMPUTE STREAMLINES - REFS [4] and [8]
-
-if (flagPlot[4] == 1 or flagPlot[5] == 1):  # If we are plotting streamlines or pressure coefficient contours
-    # Grid parameters
-    nGridX = 100  # X-grid for streamlines and contours
-    nGridY = 100  # Y-grid for streamlines and contours
-    xVals = [min(XB) - 0.5, max(XB) + 0.5]  # X-grid extents [min, max]
-    yVals = [min(YB) - 0.3, max(YB) + 0.3]  # Y-grid extents [min, max]
-
-    # Streamline parameters
-    slPct = 25  # Percentage of streamlines of the grid
-    Ysl = np.linspace(yVals[0], yVals[1], int((slPct / 100) * nGridY))  # Create array of Y streamline starting points
-    Xsl = xVals[0] * np.ones(len(Ysl))  # Create array of X streamline starting points
-    XYsl = np.vstack((Xsl.T, Ysl.T)).T  # Concatenate X and Y streamline starting points
-
-    # Generate the grid points
-    Xgrid = np.linspace(xVals[0], xVals[1], nGridX)  # X-values in evenly spaced grid
-    Ygrid = np.linspace(yVals[0], yVals[1], nGridY)  # Y-values in evenly spaced grid
-    XX, YY = np.meshgrid(Xgrid, Ygrid)  # Create meshgrid from X and Y grid arrays
-
-    # Initialize velocities
-    Vx = np.zeros([nGridX, nGridY])  # Initialize X velocity matrix
-    Vy = np.zeros([nGridX, nGridY])  # Initialize Y velocity matrix
-
-    # Path to figure out if grid point is inside polygon or not
-    AF = np.vstack((XB.T, YB.T)).T  # Concatenate XB and YB geometry points
-    afPath = path.Path(AF)  # Create a path for the geometry
-
-    # Solve for grid point X and Y velocities
-    for m in range(nGridX):  # Loop over X-grid points
-        print("m: %i" % m)
-        for n in range(nGridY):  # Loop over Y-grid points
-            XP = XX[m, n]  # Current iteration's X grid point
-            YP = YY[m, n]  # Current iteration's Y grid point
-            Mx, My = STREAMLINE_SPM(XP, YP, XB, YB, phi, S)  # Compute streamline Mx and My values
-            Nx, Ny = STREAMLINE_VPM(XP, YP, XB, YB, phi, S)  # Compute streamline Nx and Ny values
-
-            # Check if grid points are in object
-            # - If they are, assign a velocity of zero
-            if afPath.contains_points([(XP, YP)]):  # If (XP,YP) is in the body
-                Vx[m, n] = 0  # Set X-velocity equal to zero
-                Vy[m, n] = 0  # Set Y-velocity equal to zero
-            else:
-                Vx[m, n] = (Vinf * np.cos(AoAR) + sum(lam * Mx / (2 * np.pi))  # Compute X-velocity
-                            + sum(-gamma * Nx / (2 * np.pi)))
-                Vy[m, n] = (Vinf * np.sin(AoAR) + sum(lam * My / (2 * np.pi))  # Compute Y-velocity
-                            + sum(-gamma * Ny / (2 * np.pi)))
-
-    # Compute grid point velocity magnitude and pressure coefficient
-    Vxy = np.sqrt(Vx ** 2 + Vy ** 2)  # Compute magnitude of velocity vector []
-    CpXY = 1 - (Vxy / Vinf) ** 2  # Pressure coefficient []
-
-# %% CIRCULATION AND VORTEX STRENGTH CHECK
-
-if (flagPlot[4] == 1 or flagPlot[5] == 1):  # If we are plotting streamlines or Cp contours
-    # Compute circulation
-    aa = 0.75  # Ellipse horizontal half-length
-    bb = 0.25  # Ellipse vertical half-length
-    x0 = 0.5  # Ellipse center X-coordinate
-    y0 = 0  # Ellipse center Y-coordinate
-    numT = 5000  # Number of points on ellipse
-    Circulation, xC, yC, VxC, VyC = COMPUTE_CIRCULATION(aa, bb, x0, y0,  # Compute circulation around ellipse
-                                                        numT, Vx, Vy, Xgrid, Ygrid)
-
-    # Print values to Console
-    print("======= CIRCULATION RESULTS =======")
-    print("Sum of L     : %2.8f" % sum(lam * S))  # Print sum of vortex strengths
-    print("Sum of G     : %2.8f" % sum(gamma * S))  # Print sum of ovrtex strengths
-    print("Circulation  : %2.8f" % Circulation)  # Print circulation
-    print("K-J from G   : %2.8f" % (2 * sum(gamma * S)))  # Lift coefficient from K-J equation from gamma
-    print("K-J from Circ: %2.8f" % (2 * Circulation))  # Lift coefficient from K-J equation from circulation
-
 # %% PLOTTING
 
 # FIGURE: Airfoil with panel normal vectors
@@ -364,35 +231,7 @@ if (flagPlot[3] == 1):
     plt.xlabel('X Coordinate')  # Set X-label
     plt.ylabel('Cp')  # Set Y-label
     plt.title('Pressure Coefficient')  # Set title
-    plt.show()  # Display plot
     plt.legend()  # Display legend
     plt.gca().invert_yaxis()  # Invert Cp (Y) axis
-
-# FIGURE: Airfoil streamlines
-if (flagPlot[4] == 1):
-    fig = plt.figure(5)  # Create figure
-    plt.cla()  # Get ready for plotting
-    np.seterr(under="ignore")  # Ignore underflow error message
-    plt.streamplot(XX, YY, Vx, Vy, linewidth=0.5, density=40, color='r',  # Plot streamlines
-                   arrowstyle='-', start_points=XYsl)
-    plt.clim(vmin=0, vmax=2)
-    plt.fill(XB, YB, 'k')  # Plot airfoil as black polygon
-    plt.xlabel('X Units')  # Set X-label
-    plt.ylabel('Y Units')  # Set Y-label
-    plt.gca().set_aspect('equal')  # Set axes equal
-    plt.xlim(xVals)  # Set X-limits
-    plt.ylim(yVals)  # Set Y-limits
-    plt.show()  # Display plot
-
-# FIGURE: Pressure coefficient contour
-if (flagPlot[5] == 1):
-    fig = plt.figure(6)  # Create figure
-    plt.cla()  # Get ready for plotting
-    plt.contourf(XX, YY, CpXY, 500, cmap='jet')  # Plot contour
-    plt.fill(XB, YB, 'k')  # Plot airfoil as black polygon
-    plt.xlabel('X Units')  # Set X-label
-    plt.ylabel('Y Units')  # Set Y-label
-    plt.gca().set_aspect('equal')  # Set axes equal
-    plt.xlim(xVals)  # Set X-limits
-    plt.ylim(yVals)  # Set Y-limits
+    plt.grid()  #Turn on grid
     plt.show()  # Display plot
