@@ -34,6 +34,7 @@ YB = AF1[1]
 numPts = len(XB)  # Number of boundary points
 numPan = numPts - 1  # Number of panels (control points)
 
+
 # %% CHECK PANEL DIRECTIONS - FLIP IF NECESSARY
 
 # Check for direction of points
@@ -48,8 +49,8 @@ if (sumEdge < 0):  # If panels are CCW
     XB = np.flipud(XB)  # Flip the X-data array
     YB = np.flipud(YB)  # Flip the Y-data array
 
-# %% PANEL METHOD GEOMETRY - REF [1]
 
+# %% PANEL METHOD GEOMETRY
 # Initialize variables
 XC = np.zeros(numPan)  # Initialize control point X-coordinate array
 YC = np.zeros(numPan)  # Initialize control point Y-coordinate array
@@ -72,10 +73,10 @@ delta = phi + (np.pi / 2)  # Angle from positive X-axis to outward normal vector
 beta = delta - AoAR  # Angle between freestream vector and outward normal vector [rad]
 beta[beta > 2 * np.pi] = beta[beta > 2 * np.pi] - 2 * np.pi  # Make all panel angles between 0 and 2pi [rad]
 
+
 # %% COMPUTE SOURCE AND VORTEX PANEL STRENGTHS - REF [10]
 
 # Geometric integrals for SPM and VPM (normal [I,K] and tangential [J,L])
-# - Refs [2], [3], [6], and [7]
 I, J = COMPUTE_IJ_SPM(XC, YC, XB, YB, phi, S)  # Call COMPUTE_IJ_SPM function (Refs [2] and [3])
 K, L = COMPUTE_KL_VPM(XC, YC, XB, YB, phi, S)  # Call COMPUTE_KL_VPM function (Refs [6] and [7])
 
@@ -118,6 +119,7 @@ resArr = np.linalg.solve(A, b)  # Solve system of equation for all source streng
 # Separate lam and gamma values from result
 lam = resArr[0:len(resArr) - 1]  # All panel source strengths
 gamma = resArr[len(resArr) - 1]  # Constant vortex strength
+
 
 # %% COMPUTE PANEL VELOCITIES AND PRESSURE COEFFICIENTS
 

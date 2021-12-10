@@ -63,14 +63,12 @@ def COMPUTE_IJ_SPM(XC, YC, XB, YB, phi, S):
                 else:
                     # Compute I (needed for normal velocity), Ref [1]
                     term1 = 0.5 * Cn * np.log((S[j] ** 2 + 2 * A * S[j] + B) / B)  # First term in I equation
-                    term2 = ((Dn - A * Cn) / E) * (
-                                math.atan2((S[j] + A), E) - math.atan2(A, E))  # Second term in I equation
+                    term2 = ((Dn - A * Cn) / E) * (math.atan2((S[j] + A), E) - math.atan2(A, E))  # Second term in I equation
                     I[i, j] = term1 + term2  # Compute I integral
 
                     # Compute J (needed for tangential velocity), Ref [2]
                     term1 = 0.5 * Ct * np.log((S[j] ** 2 + 2 * A * S[j] + B) / B)  # First term in I equation
-                    term2 = ((Dt - A * Ct) / E) * (
-                                math.atan2((S[j] + A), E) - math.atan2(A, E))  # Second term in I equation
+                    term2 = ((Dt - A * Ct) / E) * (math.atan2((S[j] + A), E) - math.atan2(A, E))  # Second term in I equation
                     J[i, j] = term1 + term2  # Compute J integral
 
             # Zero out any problem values
