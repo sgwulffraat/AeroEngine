@@ -8,11 +8,17 @@ T_3 = np.array([612, 723, 765, 820])    #[K]
 T_4 = np.array([1234, 1423, 1523, 1631])    #[K]
 m_dot_air = np.array([17.12, 29.17, 34.58, 39.58])  #[kg/s]
 m_dot_f = (m_dot_air * c_p_g * (T_4 - T_3)) / (n_comb * LHV *10**6) #[kg/s]
-
+print("mfuel is", m_dot_f)
 AF_stoch = (71*3.76*28.01+71*32)/(4*167.31102)  #[-]
-AF = m_dot_air/m_dot_f  #[-]
-ER = AF_stoch/AF    #[-]
+AF = m_dot_air/m_dot_f#[-]
+AF_1 = 0.32*AF
+AF_2 = 0.72*AF
 
+ER = AF_stoch/AF    #[-]
+ER_1 = AF_stoch/AF_1
+ER_2 = AF_stoch/AF_2
+print("equivalence ratio in PZ", ER_1)
+print("equivalence ratio in SZ", ER_2)
 def CP_calculator_CO2(T):
     R = T/1000
     if T < 298:
