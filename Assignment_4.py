@@ -9,6 +9,31 @@ T_4 = np.array([1234, 1423, 1523, 1631])    #[K]
 m_dot_air = np.array([17.12, 29.17, 34.58, 39.58])  #[kg/s]
 m_dot_f = (m_dot_air * c_p_g * (T_4 - T_3)) / (n_comb * LHV *10**6) #[kg/s]
 
+"CxHy"
+x = 12
+y = 23
+Xo2 = 0.209476
+Xco2 = 0.000319
+Xn2 = 0.780840
+Xar = 0.009365
+Mo2 = 32
+Mco2 = 44.01
+Mn2 = 28.01
+Mar = 39.948
+Mc12h23 = 167.31102
+epsilon = (x+y/4)/Xo2
+Ma = Xo2 * Mo2 + Xn2 * Mn2 + Xco2 * Mco2 + Xar * Mar
+FAR_stoich = 1/epsilon*Mc12h23/Ma
+nco2 = x + epsilon * Xco2
+nn2 = 2*epsilon*Xn2
+nar = epsilon*Xar
+nh2o = y / 2
+
+
+
+
+
+
 AF_stoch = (71*3.76*28.01+71*32)/(4*167.31102)  #[-]
 AF = m_dot_air/m_dot_f  #[-]
 ER = AF_stoch/AF    #[-]
