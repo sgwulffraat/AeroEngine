@@ -196,7 +196,7 @@ T_3 = np.array([612, 723, 765, 820])    #[K]
 T_4 = np.array([1234, 1423, 1523, 1631])    #[K]
 m_dot_air = np.array([17.12, 29.17, 34.58, 39.58])  #[kg/s]
 m_dot_f = (m_dot_air * c_p_g * (T_4 - T_3)) / (n_comb * LHV *10**6) #[kg/s]
-
+print("the lhv is", LHV)
 "CxHy"
 x = 12
 y = 23
@@ -215,7 +215,10 @@ FAR_stoich = 1/epsilon*Mc12h23/Ma
 phi_overall = m_dot_f / m_dot_air / FAR_stoich
 
 AF_stoch = (71*3.76*28.01+71*32)/(4*167.31102)  #[-]
-AF = m_dot_air/m_dot_f  #[-]
+AF = m_dot_air/m_dot_f
+AF_PZ = 0.32*AF
+AF_SZ = 0.40*AF
 ER = AF_stoch/AF    #[-]
-
+ER_PZ = AF_stoch/AF_PZ
+ER_SZ = AF_stoch/AF_SZ
 print(adiabatic_flame_temperature(phi_overall[0],2000,T_3[0]))
