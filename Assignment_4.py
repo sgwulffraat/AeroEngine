@@ -32,12 +32,11 @@ def adiabatic_flame_temperature(phi,Tad_guess,T3):
     Hkerosene = -211.46
     Hreac = (Hkerosene + (epsilon/phi) * (Xco2*Hco2 + Xn2*Hn2 + Xar*Har + Xo2*Ho2)) * 1000
     Tad = 0
-    while abs((Tad/Tad_guess - 1)) > 0.001:
+    while abs((Tad/Tad_guess - 1)) > 1e-6:
         T_in = (Tad_guess + T3)/2
         Tad = Tad_guess
         Tad_guess = 298.15 + ((Hreac - nco2*hf0_co2 - nh2o*hf0_h2o)/(no2*CP_calculator_O2(T_in)+nar*CP_calculator_Ar(T_in)+nco2 *
                         CP_calculator_CO2(T_in)+nn2*CP_calculator_N2(T_in)+nh2o*CP_calculator_H20(T_in)))
-        print(Tad_guess)
     return Tad
 
 "functions to calculate standard enthalpy and heat capacity for Argon for a given temperature"
