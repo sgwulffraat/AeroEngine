@@ -252,3 +252,6 @@ print(adiabatic_flame_temperature(ER_DZ[3],2000,T_3[3]))
 
 tau = (V_can*P_3)/(m_dot_air*gas_constant*T_mean)
 print(tau)
+
+heat_density  = (m_dot_f*LHV*1000000*n_comb)/(V_can)
+print(heat_density/1000000)
