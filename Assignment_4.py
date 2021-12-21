@@ -265,4 +265,5 @@ data = {'air mass flow [kg/s] ':[m_dot_air[0], m_dot_air[1], m_dot_air[2], m_dot
         'Heat Density [MW/m^3]':[heat_density[0], heat_density[1], heat_density[2], heat_density[3]]}
 df = pd.DataFrame(data, index=['40', '80', '100', '120'])
 
-print(df)
+with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+    print(df)
