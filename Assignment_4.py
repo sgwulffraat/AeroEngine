@@ -222,4 +222,25 @@ ER = AF_stoch/AF    #[-]
 ER_PZ = AF_stoch/AF_PZ
 ER_SZ = AF_stoch/AF_SZ
 ER_DZ = AF_stoch/AF_DZ
-print(adiabatic_flame_temperature(phi_overall[0],2000,T_3[0]))
+
+print(ER_PZ)
+print(T_3)
+print("Adiabatic flame temperature pz, sz, dz F = 40kN")
+print(adiabatic_flame_temperature(ER_PZ[0],2000,T_3[0]))
+print(adiabatic_flame_temperature(ER_SZ[0],2000,T_3[0]))
+print(adiabatic_flame_temperature(ER_DZ[0],2000,T_3[0]))
+
+print("Adiabatic flame temperature pz, sz, dz F = 80kN")
+print(adiabatic_flame_temperature(ER_PZ[1],2000,T_3[1]))
+print(adiabatic_flame_temperature(ER_SZ[1],2000,T_3[1]))
+print(adiabatic_flame_temperature(ER_DZ[1],2000,T_3[1]))
+
+print("Adiabatic flame temperature pz, sz, dz F = 100kN")
+print(adiabatic_flame_temperature(ER_PZ[2],2000,T_3[2]))
+print(adiabatic_flame_temperature(ER_SZ[2],2000,T_3[2]))
+print(adiabatic_flame_temperature(ER_DZ[2],2000,T_3[2]))
+
+print("Adiabatic flame temperature pz, sz, dz F = 120kN")
+print(adiabatic_flame_temperature(ER_PZ[3],2000,T_3[3]))
+print(adiabatic_flame_temperature(ER_SZ[3],2000,T_3[3]))
+print(adiabatic_flame_temperature(ER_DZ[3],2000,T_3[3]))
