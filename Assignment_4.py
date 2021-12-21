@@ -192,7 +192,11 @@ n_comb = 0.99   #[-]
 c_p_g = 1150    #[-]
 LHV = ((48*393.5+46*241.826)-211.46*4)/(167.31102*4)    #[MJ/kg]
 T_3 = np.array([612, 723, 765, 820])    #[K]
-T_4 = np.array([1234, 1423, 1523, 1631])    #[K]
+T_4 = np.array([1234, 1423, 1523, 1631])#[K]
+T_mean = (T_3 + T_4)/2                  #[K]
+P_3 = np.array([1166,2188,2700,3100]) * 1000    #[kPa]
+V_can = 0.02        #[m^3]
+gas_constant = 287      #[J/mol/K]
 m_dot_air = np.array([17.12, 29.17, 34.58, 39.58])  #[kg/s]
 m_dot_f = (m_dot_air * c_p_g * (T_4 - T_3)) / (n_comb * LHV *10**6) #[kg/s]
 print("the lhv is", LHV)
@@ -244,3 +248,7 @@ print("Adiabatic flame temperature pz, sz, dz F = 120kN")
 print(adiabatic_flame_temperature(ER_PZ[3],2000,T_3[3]))
 print(adiabatic_flame_temperature(ER_SZ[3],2000,T_3[3]))
 print(adiabatic_flame_temperature(ER_DZ[3],2000,T_3[3]))
+
+
+tau = (V_can*P_3)/(m_dot_air*gas_constant*T_mean)
+print(tau)
