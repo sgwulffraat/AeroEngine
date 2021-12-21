@@ -1,5 +1,6 @@
 from math import *
 import numpy as np
+import pandas as pd
 
 def adiabatic_flame_temperature(phi,Tad_guess,T3):
     "CxHy"
@@ -255,3 +256,13 @@ print(tau)
 
 heat_density  = (m_dot_f*LHV*1000000*n_comb)/(V_can)
 print(heat_density/1000000)
+
+data = {'air mass flow [kg/s] ':[m_dot_air[0], m_dot_air[1], m_dot_air[2], m_dot_air[3]],
+        'HPC exit Pressure [Pa]':[P_3[0], P_3[1], P_3[2], P_3[3]],
+        'HPC exit Temperature [K]':[T_3[0], T_3[1], T_3[2], T_3[3]],
+        'Burner exit Temperature [K]':[T_4[0], T_4[1], T_4[2], T_4[3]],
+        'Residence Time [s]':[tau[0], tau[1], tau[2], tau[3]],
+        'Heat Density [MW/m^3]':[heat_density[0], heat_density[1], heat_density[2], heat_density[3]]}
+df = pd.DataFrame(data, index=['40', '80', '100', '120'])
+
+print(df)
