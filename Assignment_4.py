@@ -216,8 +216,10 @@ phi_overall = m_dot_f / m_dot_air / FAR_stoich
 AF_stoch = (71*3.76*28.01+71*32)/(4*167.31102)  #[-]
 AF = m_dot_air/m_dot_f
 AF_PZ = 0.32*AF
-AF_SZ = 0.72*AF
+AF_SZ = 0.52*AF
+AF_DZ = 0.80*AF
 ER = AF_stoch/AF    #[-]
 ER_PZ = AF_stoch/AF_PZ
 ER_SZ = AF_stoch/AF_SZ
+ER_DZ = AF_stoch/AF_DZ
 print(adiabatic_flame_temperature(phi_overall[0],2000,T_3[0]))
