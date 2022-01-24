@@ -259,6 +259,7 @@ heat_density  = (m_dot_f*LHV*1000000*n_comb)/(V_can*P_3)
 print(heat_density/1000000)
 
 data = {'air mass flow [kg/s] ':[m_dot_air[0], m_dot_air[1], m_dot_air[2], m_dot_air[3]],
+        'Fuel mass flow [kg/s]':[m_dot_f[0], m_dot_f[1], m_dot_f[2], m_dot_f[3]],
         'HPC exit Pressure [Pa]':[P_3[0], P_3[1], P_3[2], P_3[3]],
         'HPC exit Temperature [K]':[T_3[0], T_3[1], T_3[2], T_3[3]],
         'Burner exit Temperature [K]':[T_4[0], T_4[1], T_4[2], T_4[3]],

@@ -4,11 +4,9 @@ import numpy as np
 import pandas as pd
 import pyromat as pm
 from scipy import interpolate
-#test 2
 
-#test
-#gianntrue
 ### Inputs ####
+
 M = 0.78
 h = 10668           #m
 PR_intake = 0.98
