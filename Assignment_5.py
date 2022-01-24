@@ -12,7 +12,7 @@ Cp_g = 1150         #J/kg*K
 R = 287
 
 # For convergent nozzle CD = False, For CD nozzle CD = True
-CD = False
+CD = True
 
 ## Conditions defined as classes
 class TO_Rh:
@@ -101,9 +101,10 @@ def Cyclecalculator(P7, T7, T_amb, P_amb, m_dot, M, R, k_g, k_a, nozz_eff, Cp_g,
         rho9 = P9/(R * T9)
         V9 = sqrt(2 * Cp_g * dT)
         A9 = m_dot/(rho9 * V9)
+        L_nozz = ((abs(A8-A9))/2)/np.tan(10*(np.pi/180))
         M9 = V9/sqrt(k_g * R * T9)
         F_N = m_dot * (V9 - Vflight)
-        return P8, T8, A8, V8, P9, T9, A9, V9, M9, F_N
+        return P8, T8, A8, V8, P9, T9, A9, V9, M9, F_N, L_nozz
     else:
         F_m = m_dot * (V8 - Vflight)
         F_p = A8 * (P8 - P_amb)
@@ -115,13 +116,13 @@ def Cyclecalculator(P7, T7, T_amb, P_amb, m_dot, M, R, k_g, k_a, nozz_eff, Cp_g,
 #Cycle calculations for the various conditions
 
 if CD == True:
-    TO_P8, TO_T8, TO_A8, TO_V8, TO_P9, TO_T9, TO_A9, TO_V9, TO_M9, TO_F_N = Cyclecalculator(
+    TO_P8, TO_T8, TO_A8, TO_V8, TO_P9, TO_T9, TO_A9, TO_V9, TO_M9, TO_F_N, TO_L_nozz = Cyclecalculator(
         TO().P7, TO().T7,TO().T_amb, TO().P_amb,TO().m_dot, TO().M, R, k_g, k_a, nozz_eff, Cp_g, CD)
-    TO_Rh_P8, TO_Rh_T8, TO_Rh_A8, TO_Rh_V8, TO_Rh_P9, TO_Rh_T9, TO_Rh_A9, TO_Rh_V9, TO_Rh_M9, TO_Rh_F_N = Cyclecalculator(
+    TO_Rh_P8, TO_Rh_T8, TO_Rh_A8, TO_Rh_V8, TO_Rh_P9, TO_Rh_T9, TO_Rh_A9, TO_Rh_V9, TO_Rh_M9, TO_Rh_F_N, TO_Rh_L_nozz = Cyclecalculator(
         TO_Rh().P7, TO_Rh().T7, TO_Rh().T_amb, TO_Rh().P_amb, TO_Rh().m_dot, TO_Rh().M, R, k_g, k_a, nozz_eff, Cp_g, CD)
-    Cruise_P8, Cruise_T8, Cruise_A8, Cruise_V8, Cruise_P9, Cruise_T9, Cruise_A9, Cruise_V9, Cruise_M9, Cruise_F_N = Cyclecalculator(
+    Cruise_P8, Cruise_T8, Cruise_A8, Cruise_V8, Cruise_P9, Cruise_T9, Cruise_A9, Cruise_V9, Cruise_M9, Cruise_F_N, Cruise_L_nozz = Cyclecalculator(
         Cruise().P7, Cruise().T7, Cruise().T_amb, Cruise().P_amb, Cruise().m_dot, Cruise().M, R, k_g, k_a, nozz_eff, Cp_g, CD)
-    Cruise_Rh_P8, Cruise_Rh_T8, Cruise_Rh_A8, Cruise_Rh_V8, Cruise_Rh_P9, Cruise_Rh_T9, Cruise_Rh_A9, Cruise_Rh_V9, Cruise_Rh_M9, Cruise_Rh_F_N = Cyclecalculator(
+    Cruise_Rh_P8, Cruise_Rh_T8, Cruise_Rh_A8, Cruise_Rh_V8, Cruise_Rh_P9, Cruise_Rh_T9, Cruise_Rh_A9, Cruise_Rh_V9, Cruise_Rh_M9, Cruise_Rh_F_N, Cruise_Rh_L_nozz = Cyclecalculator(
         Cruise_Rh().P7, Cruise_Rh().T7, Cruise_Rh().T_amb, Cruise_Rh().P_amb, Cruise_Rh().m_dot, Cruise_Rh().M, R, k_g, k_a, nozz_eff, Cp_g, CD)
     data = {'P_8 [Pa]': [TO_P8, TO_Rh_P8, Cruise_P8, Cruise_Rh_P8],
             'T_8 [K]': [TO_T8, TO_Rh_T8, Cruise_T8, Cruise_Rh_T8],
@@ -133,7 +134,8 @@ if CD == True:
             'A_9 [m^2]': [TO_A9, TO_Rh_A9, Cruise_A9, Cruise_Rh_A9],
             'V_9 [m/s]': [TO_V9, TO_Rh_V9, Cruise_V9, Cruise_Rh_V9],
             'M_9 [-]': [TO_M9, TO_Rh_M9, Cruise_M9, Cruise_Rh_M9],
-            'F_N [N]': [TO_F_N, TO_Rh_F_N, Cruise_F_N, Cruise_Rh_F_N]}
+            'F_N [N]': [TO_F_N, TO_Rh_F_N, Cruise_F_N, Cruise_Rh_F_N],
+            'Lenght Nozzle [m]': [TO_L_nozz, TO_Rh_L_nozz, Cruise_L_nozz, Cruise_Rh_L_nozz]}
 else:
     TO_P8, TO_T8, TO_A8, TO_V8, TO_F_m, TO_F_p, TO_F_N = Cyclecalculator(TO().P7, TO().T7, TO().T_amb,
         TO().P_amb, TO().m_dot, TO().M, R, k_g, k_a, nozz_eff, Cp_g, CD)
