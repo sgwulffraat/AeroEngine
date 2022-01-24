@@ -11,11 +11,12 @@ k_a = 1.3
 Cp_g = 1150         #J/kg*K
 R = 287
 
+# For convergent nozzle CD = False, For CD nozzle CD = True
+CD = False
 
 ## Conditions defined as classes
 class TO_Rh:
     def __init__(self):
-        self.CD = True
         self.h = 0              #m
         self.M = 0
         self.Reheat = True
@@ -27,7 +28,6 @@ class TO_Rh:
 
 class TO:
     def __init__(self):
-        self.CD = True
         self.h = 0              #m
         self.M = 0
         self.Reheat = False
@@ -39,7 +39,6 @@ class TO:
 
 class Cruise:
     def __init__(self):
-        self.CD = False
         self.h = 10000          #m
         self.M = 0.8
         self.Reheat = False
@@ -51,7 +50,6 @@ class Cruise:
 
 class Cruise_Rh:
     def __init__(self):
-        self.CD = False
         self.h = 12000          #m
         self.M = 1.4
         self.Reheat = True
@@ -89,7 +87,7 @@ def critPR(n_j, k):
 
 PR_crit = critPR(nozz_eff, k_g)
 
-def Cyclecalculator(P7, T7, T_amb, P_amb, m_dot, M, CD, R, k_g, k_a, nozz_eff, Cp_g):
+def Cyclecalculator(P7, T7, T_amb, P_amb, m_dot, M, R, k_g, k_a, nozz_eff, Cp_g, CD):
     P8 = P7/PR_crit
     T8 = T7 * (2/(k_g+1))
     rho8 = P8/(R * T8)
@@ -115,12 +113,45 @@ def Cyclecalculator(P7, T7, T_amb, P_amb, m_dot, M, CD, R, k_g, k_a, nozz_eff, C
 
 
 #Cycle calculations for the various conditions
-TO_P8, TO_T8, TO_A8, TO_V8, TO_P9, TO_T9, TO_A9, TO_V9, TO_M9, TO_F_N = Cyclecalculator(TO().P7, TO().T7, TO().T_amb, TO().P_amb, TO().m_dot, TO().M, TO().CD, R, k_g, k_a, nozz_eff, Cp_g)
-TO_Rh_P8, TO_Rh_T8, TO_Rh_A8, TO_Rh_V8, TO_Rh_P9, TO_Rh_T9, TO_Rh_A9, TO_Rh_V9, TO_Rh_M9, TO_Rh_F_N = Cyclecalculator(TO_Rh().P7, TO_Rh().T7, TO_Rh().T_amb, TO_Rh().P_amb, TO_Rh().m_dot, TO_Rh().M, TO_Rh().CD, R, k_g, k_a, nozz_eff, Cp_g)
-data = {'P_8 [Pa]': [TO_P8, TO_Rh_P8],
-        'T_8 [K]': [TO_T8, TO_Rh_T8],
-        'A_8 [m^2]': [TO_A8, TO_Rh_A8],
-        'V_8 [m/s]' [TO_V8, TO_Rh_V8]}
-df = pd.DataFrame(data, index=['Take-Off (No afterburner)', 'Take-Off (Afterburner)'])
+
+if CD == True:
+    TO_P8, TO_T8, TO_A8, TO_V8, TO_P9, TO_T9, TO_A9, TO_V9, TO_M9, TO_F_N = Cyclecalculator(
+        TO().P7, TO().T7,TO().T_amb, TO().P_amb,TO().m_dot, TO().M, R, k_g, k_a, nozz_eff, Cp_g, CD)
+    TO_Rh_P8, TO_Rh_T8, TO_Rh_A8, TO_Rh_V8, TO_Rh_P9, TO_Rh_T9, TO_Rh_A9, TO_Rh_V9, TO_Rh_M9, TO_Rh_F_N = Cyclecalculator(
+        TO_Rh().P7, TO_Rh().T7, TO_Rh().T_amb, TO_Rh().P_amb, TO_Rh().m_dot, TO_Rh().M, R, k_g, k_a, nozz_eff, Cp_g, CD)
+    Cruise_P8, Cruise_T8, Cruise_A8, Cruise_V8, Cruise_P9, Cruise_T9, Cruise_A9, Cruise_V9, Cruise_M9, Cruise_F_N = Cyclecalculator(
+        Cruise().P7, Cruise().T7, Cruise().T_amb, Cruise().P_amb, Cruise().m_dot, Cruise().M, R, k_g, k_a, nozz_eff, Cp_g, CD)
+    Cruise_Rh_P8, Cruise_Rh_T8, Cruise_Rh_A8, Cruise_Rh_V8, Cruise_Rh_P9, Cruise_Rh_T9, Cruise_Rh_A9, Cruise_Rh_V9, Cruise_Rh_M9, Cruise_Rh_F_N = Cyclecalculator(
+        Cruise_Rh().P7, Cruise_Rh().T7, Cruise_Rh().T_amb, Cruise_Rh().P_amb, Cruise_Rh().m_dot, Cruise_Rh().M, R, k_g, k_a, nozz_eff, Cp_g, CD)
+    data = {'P_8 [Pa]': [TO_P8, TO_Rh_P8, Cruise_P8, Cruise_Rh_P8],
+            'T_8 [K]': [TO_T8, TO_Rh_T8, Cruise_T8, Cruise_Rh_T8],
+            'A_8 [m^2]': [TO_A8, TO_Rh_A8, Cruise_A8, Cruise_Rh_A8],
+            'V_8 [m/s]': [TO_V8, TO_Rh_V8, Cruise_V8, Cruise_Rh_V8],
+            'M_8 [-]': [1, 1, 1, 1],
+            'P_9 [Pa]': [TO_P9, TO_Rh_P9, Cruise_P9, Cruise_Rh_P9],
+            'T_9 [K]': [TO_T9, TO_Rh_T9, Cruise_T9, Cruise_Rh_T9],
+            'A_9 [m^2]': [TO_A9, TO_Rh_A9, Cruise_A9, Cruise_Rh_A9],
+            'V_9 [m/s]': [TO_V9, TO_Rh_V9, Cruise_V9, Cruise_Rh_V9],
+            'M_9 [-]': [TO_M9, TO_Rh_M9, Cruise_M9, Cruise_Rh_M9],
+            'F_N [N]': [TO_F_N, TO_Rh_F_N, Cruise_F_N, Cruise_Rh_F_N]}
+else:
+    TO_P8, TO_T8, TO_A8, TO_V8, TO_F_m, TO_F_p, TO_F_N = Cyclecalculator(TO().P7, TO().T7, TO().T_amb,
+        TO().P_amb, TO().m_dot, TO().M, R, k_g, k_a, nozz_eff, Cp_g, CD)
+    TO_Rh_P8, TO_Rh_T8, TO_Rh_A8, TO_Rh_V8, TO_Rh_F_m, TO_Rh_F_p ,TO_Rh_F_N = Cyclecalculator(TO_Rh().P7,
+        TO_Rh().T7, TO_Rh().T_amb, TO_Rh().P_amb, TO_Rh().m_dot, TO_Rh().M, R, k_g, k_a, nozz_eff, Cp_g, CD)
+    Cruise_P8, Cruise_T8, Cruise_A8, Cruise_V8, Cruise_F_m, Cruise_F_p, Cruise_F_N = Cyclecalculator(
+        Cruise().P7, Cruise().T7, Cruise().T_amb, Cruise().P_amb, Cruise().m_dot, Cruise().M, R, k_g, k_a, nozz_eff, Cp_g, CD)
+    Cruise_Rh_P8, Cruise_Rh_T8, Cruise_Rh_A8, Cruise_Rh_V8, Cruise_Rh_F_m, Cruise_Rh_F_p , Cruise_Rh_F_N = Cyclecalculator(
+        Cruise_Rh().P7, Cruise_Rh().T7, Cruise_Rh().T_amb, Cruise_Rh().P_amb, Cruise_Rh().m_dot, Cruise_Rh().M, R, k_g, k_a, nozz_eff, Cp_g, CD)
+    data = {'P_8 [Pa]': [TO_P8, TO_Rh_P8, Cruise_P8, Cruise_Rh_P8],
+            'T_8 [K]': [TO_T8, TO_Rh_T8, Cruise_T8, Cruise_Rh_T8],
+            'A_8 [m^2]': [TO_A8, TO_Rh_A8, Cruise_A8, Cruise_Rh_A8],
+            'V_8 [m/s]': [TO_V8, TO_Rh_V8, Cruise_V8, Cruise_Rh_V8],
+            'M_8 [-]': [1, 1, 1, 1],
+            'F_m [N]': [TO_F_m, TO_Rh_F_m, Cruise_F_m, Cruise_Rh_F_m],
+            'F_p [N]': [TO_F_p, TO_Rh_F_p, Cruise_F_p, Cruise_Rh_F_p],
+            'F_N [N]': [TO_F_N, TO_Rh_F_N, Cruise_F_N, Cruise_Rh_F_N]}
+
+df = pd.DataFrame(data, index=['Take-Off', 'Take-Off (Afterburner)', 'Cruise', 'Cruise (Afterburner)'])
 df_t = df.T
 print(df_t)
