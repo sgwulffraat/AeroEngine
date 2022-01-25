@@ -154,6 +154,7 @@ else:
             'F_p [N]': [TO_F_p, TO_Rh_F_p, Cruise_F_p, Cruise_Rh_F_p],
             'F_N [N]': [TO_F_N, TO_Rh_F_N, Cruise_F_N, Cruise_Rh_F_N]}
 pd.set_option("display.max_columns", 6)
+pd.set_option("display.precision", 3)
 df = pd.DataFrame(data, index=['Take-Off', 'Take-Off (Afterburner)', 'Cruise', 'Cruise (Afterburner)'])
 df_t = df.T
 
