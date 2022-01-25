@@ -60,32 +60,10 @@ class Cruise_Rh:
         self.P_amb = 19330.4    #Pa
 
 
-### Functions ###
-def isentropcomp_T(T1, n_is, p1, p2, k):
-    T2 = (1 + 1 / n_is * ((p2 / p1) ** ((k - 1) / k) - 1)) * T1
-    return T2
-
-def isentropexp_T(T1, n_is, p1, p2, k):
-    T2 = (-T1 * n_is * (1 - (p2 / p1) ** ((k - 1) / k) )) + T1
-    return T2
-
-def isentropcomp_p(p1, n_is, M, k):
-    p2 = (1 + n_is * ( (k-1) / 2 ) * M**2 ) ** ( k / (k - 1)) * p1
-    return p2
-
-def totalT(T, M, k):
-    Tt = T*(1+(k-1)/2*M**2)
-    return Tt
-
-def totalp(p, Tt, T, k):
-    pt = p*(Tt/T)**(k/(k-1))
-    return pt
-
+#Definitions
 def critPR(n_j, k):
     e_c = (1/(1-1/n_j*((k-1)/(k+1)))**(k/(k-1)))
     return e_c
-
-PR_crit = critPR(nozz_eff, k_g)
 
 def Cyclecalculator(P7, T7, T_amb, P_amb, m_dot, M, R, k_g, k_a, nozz_eff, Cp_g, CD):
     P8 = P7/PR_crit
@@ -114,6 +92,7 @@ def Cyclecalculator(P7, T7, T_amb, P_amb, m_dot, M, R, k_g, k_a, nozz_eff, Cp_g,
 
 
 #Cycle calculations for the various conditions
+PR_crit = critPR(nozz_eff, k_g)
 
 if CD == True:
     TO_P8, TO_T8, TO_A8, TO_V8, TO_P9, TO_T9, TO_A9, TO_V9, TO_M9, TO_F_N, TO_L_nozz = Cyclecalculator(
