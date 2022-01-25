@@ -101,7 +101,7 @@ def Cyclecalculator(P7, T7, T_amb, P_amb, m_dot, M, R, k_g, k_a, nozz_eff, Cp_g,
         rho9 = P9/(R * T9)
         V9 = sqrt(2 * Cp_g * dT)
         A9 = m_dot/(rho9 * V9)
-        L_nozz = ((abs(A8-A9))/2)/np.tan(10*(np.pi/180))
+        L_nozz = ((A9-A8)/2)/np.tan(10*(np.pi/180))
         M9 = V9/sqrt(k_g * R * T9)
         F_N = m_dot * (V9 - Vflight)
         return P8, T8, A8, V8, P9, T9, A9, V9, M9, F_N, L_nozz
@@ -153,7 +153,8 @@ else:
             'F_m [N]': [TO_F_m, TO_Rh_F_m, Cruise_F_m, Cruise_Rh_F_m],
             'F_p [N]': [TO_F_p, TO_Rh_F_p, Cruise_F_p, Cruise_Rh_F_p],
             'F_N [N]': [TO_F_N, TO_Rh_F_N, Cruise_F_N, Cruise_Rh_F_N]}
-
+pd.set_option("display.max_columns", 6)
 df = pd.DataFrame(data, index=['Take-Off', 'Take-Off (Afterburner)', 'Cruise', 'Cruise (Afterburner)'])
 df_t = df.T
+
 print(df_t)
