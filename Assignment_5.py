@@ -76,11 +76,12 @@ def Cyclecalculator(P7, T7, T_amb, P_amb, m_dot, M, R, k_g, k_a, nozz_eff, Cp_g,
         dT = T7 * nozz_eff * (1 - (P_amb/P7)**((k_g - 1)/k_g))
         T9 = T7 - dT
         P9 = P_amb
-        rho9 = P9/(R * T9)
         V9 = sqrt(2 * Cp_g * dT)
-        A9 = m_dot/(rho9 * V9)
-        L_nozz = ((A9-A8)/2)/np.tan(10*(np.pi/180))
         M9 = V9/sqrt(k_g * R * T9)
+        A9 = A8 * ((k_g + 1)/2)**(-1*(k_g + 1)/(2 * (k_g -1))) * ((1 + (k_g -1)/2 * M9**2)**((k_g + 1)/(2 * (k_g - 1))))/M9
+        r8 = sqrt(A8/np.pi)
+        r9 = sqrt(A9/np.pi)
+        L_nozz = (r9-r8)/np.tan(10*(np.pi/180))
         F_N = m_dot * (V9 - Vflight)
         return P8, T8, A8, V8, P9, T9, A9, V9, M9, F_N, L_nozz
     else:
