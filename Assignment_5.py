@@ -12,7 +12,7 @@ Cp_g = 1150         #J/kg*K
 R = 287
 
 # For convergent nozzle CD = False, For CD nozzle CD = True
-CD = True
+CD = False
 
 ## Conditions defined as classes
 class TO_Rh:
@@ -90,6 +90,11 @@ def Cyclecalculator(P7, T7, T_amb, P_amb, m_dot, M, R, k_g, k_a, nozz_eff, Cp_g,
         F_N = F_m + F_p
         return P8, T8, A8, V8, F_m, F_p, F_N
 
+def CorrectedMass(T_amb, P_amb, m_dot):
+    theta = T_amb/288.15
+    delta = P_amb/101325
+    m_cor_dot = m_dot*np.sqrt(theta)/delta
+    return m_cor_dot
 
 
 #Cycle calculations for the various conditions
@@ -104,7 +109,12 @@ if CD == True:
         Cruise().P7, Cruise().T7, Cruise().T_amb, Cruise().P_amb, Cruise().m_dot, Cruise().M, R, k_g, k_a, nozz_eff, Cp_g, CD)
     Cruise_Rh_P8, Cruise_Rh_T8, Cruise_Rh_A8, Cruise_Rh_V8, Cruise_Rh_P9, Cruise_Rh_T9, Cruise_Rh_A9, Cruise_Rh_V9, Cruise_Rh_M9, Cruise_Rh_F_N, Cruise_Rh_L_nozz = Cyclecalculator(
         Cruise_Rh().P7, Cruise_Rh().T7, Cruise_Rh().T_amb, Cruise_Rh().P_amb, Cruise_Rh().m_dot, Cruise_Rh().M, R, k_g, k_a, nozz_eff, Cp_g, CD)
-    data = {'P_8 [Pa]': [TO_P8, TO_Rh_P8, Cruise_P8, Cruise_Rh_P8],
+    TO_cor_m = CorrectedMass(TO().T_amb, TO().P_amb, TO().m_dot)
+    TO_Rh_cor_m = CorrectedMass(TO_Rh().T_amb, TO_Rh().P_amb, TO_Rh().m_dot)
+    Cruise_cor_m = CorrectedMass(Cruise().T_amb, Cruise().P_amb, Cruise().m_dot)
+    Cruise_Rh_cor_m = CorrectedMass(Cruise_Rh().T_amb, Cruise_Rh().P_amb, Cruise_Rh().m_dot)
+    data = {'m_cor [kg/s]': [TO_cor_m, TO_Rh_cor_m, Cruise_cor_m, Cruise_Rh_cor_m],
+            'P_8 [Pa]': [TO_P8, TO_Rh_P8, Cruise_P8, Cruise_Rh_P8],
             'T_8 [K]': [TO_T8, TO_Rh_T8, Cruise_T8, Cruise_Rh_T8],
             'A_8 [m^2]': [TO_A8, TO_Rh_A8, Cruise_A8, Cruise_Rh_A8],
             'V_8 [m/s]': [TO_V8, TO_Rh_V8, Cruise_V8, Cruise_Rh_V8],
@@ -125,7 +135,12 @@ else:
         Cruise().P7, Cruise().T7, Cruise().T_amb, Cruise().P_amb, Cruise().m_dot, Cruise().M, R, k_g, k_a, nozz_eff, Cp_g, CD)
     Cruise_Rh_P8, Cruise_Rh_T8, Cruise_Rh_A8, Cruise_Rh_V8, Cruise_Rh_F_m, Cruise_Rh_F_p , Cruise_Rh_F_N = Cyclecalculator(
         Cruise_Rh().P7, Cruise_Rh().T7, Cruise_Rh().T_amb, Cruise_Rh().P_amb, Cruise_Rh().m_dot, Cruise_Rh().M, R, k_g, k_a, nozz_eff, Cp_g, CD)
-    data = {'P_8 [Pa]': [TO_P8, TO_Rh_P8, Cruise_P8, Cruise_Rh_P8],
+    TO_cor_m = CorrectedMass(TO().T_amb, TO().P_amb, TO().m_dot)
+    TO_Rh_cor_m = CorrectedMass(TO_Rh().T_amb, TO_Rh().P_amb, TO_Rh().m_dot)
+    Cruise_cor_m = CorrectedMass(Cruise().T_amb, Cruise().P_amb, Cruise().m_dot)
+    Cruise_Rh_cor_m = CorrectedMass(Cruise_Rh().T_amb, Cruise_Rh().P_amb, Cruise_Rh().m_dot)
+    data = {'m_cor [kg/s]': [TO_cor_m, TO_Rh_cor_m, Cruise_cor_m, Cruise_Rh_cor_m],
+            'P_8 [Pa]': [TO_P8, TO_Rh_P8, Cruise_P8, Cruise_Rh_P8],
             'T_8 [K]': [TO_T8, TO_Rh_T8, Cruise_T8, Cruise_Rh_T8],
             'A_8 [m^2]': [TO_A8, TO_Rh_A8, Cruise_A8, Cruise_Rh_A8],
             'V_8 [m/s]': [TO_V8, TO_Rh_V8, Cruise_V8, Cruise_Rh_V8],
@@ -140,10 +155,10 @@ df_t = df.T
 
 print(df_t)
 
-delta_F_m = np.array([52057.975, 83034.663,	12748.783,21634.573]) - np.array([73901.321, 114234.681, 27583.282, 57589.544])
+delta_F_m = np.array([51197.505, 81662.178, 11986.770, 20018.408]) - np.array([67670.751, 104488.906, 24248.974, 50817.466])
 print("delta F_m = ",delta_F_m)
 
-delta_F_n = np.array([66614.235, 103183.144, 23090.084,	45994.613]) - np.array([73901.321, 114234.681, 27583.282, 57589.544])
+delta_F_n = np.array([67519.233, 104544.569, 23210.153, 46214.812]) - np.array([67670.751, 104488.906, 24248.974, 50817.466])
 print("delta F_n = ",delta_F_n)
 
 delta_A = np.array([])
