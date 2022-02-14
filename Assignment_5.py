@@ -138,3 +138,12 @@ df = pd.DataFrame(data, index=['Take-Off', 'Take-Off (Afterburner)', 'Cruise', '
 df_t = df.T
 
 print(df_t)
+
+delta_F_m = np.array([52057.975, 83034.663,	12748.783,21634.573]) - np.array([73901.321, 114234.681, 27583.282, 57589.544])
+print("delta F_m = ",delta_F_m)
+
+delta_F_n = np.array([66614.235, 103183.144, 23090.084,	45994.613]) - np.array([73901.321, 114234.681, 27583.282, 57589.544])
+print("delta F_n = ",delta_F_n)
+
+delta_A = np.array([])
+
