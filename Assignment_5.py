@@ -6,8 +6,8 @@ from math import *
 #Constants
 nozz_eff = 0.98
 A7 = 0.52           #m^2
-k_g = 1.44
-k_a = 1.3
+k_g = 1.33
+k_a = 1.4
 Cp_g = 1150         #J/kg*K
 R = 287
 
@@ -62,7 +62,7 @@ class Cruise_Rh:
 
 #Definitions
 def critPR(n_j, k):
-    e_c = (1/(1-1/n_j*((k-1)/(k+1)))**(k/(k-1)))
+    e_c = (1/((1-1/n_j*((k-1)/(k+1)))**(k/(k-1))))
     return e_c
 
 def Cyclecalculator(P7, T7, T_amb, P_amb, m_dot, M, R, k_g, k_a, nozz_eff, Cp_g, CD):
