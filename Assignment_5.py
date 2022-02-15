@@ -12,7 +12,7 @@ Cp_g = 1150         #J/kg*K
 R = 287
 
 # For convergent nozzle CD = False, For CD nozzle CD = True
-CD = False
+CD = True
 
 ## Conditions defined as classes
 class TO_Rh:
@@ -161,5 +161,5 @@ print("delta F_m = ",delta_F_m)
 delta_F_n = np.array([67519.233, 104544.569, 23210.153, 46214.812]) - np.array([67670.751, 104488.906, 24248.974, 50817.466])
 print("delta F_n = ",delta_F_n)
 
-delta_A = np.array([])
-
+delta_A = np.array([TO_A9, TO_Rh_A9, Cruise_A9, Cruise_Rh_A9])/ np.array([TO_A8, TO_Rh_A8, Cruise_A8, Cruise_Rh_A8])
+print("delta a =", delta_A)
