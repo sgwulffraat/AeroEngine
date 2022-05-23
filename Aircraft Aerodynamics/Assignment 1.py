@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from Airfoilimporter import import_airfoil
 from Airfoilgeometrycalculator import airfoil_geometery
-from Cp_calculator import Cp_calculatorSP, Cp_calculatorVP
+from Cp_calculator import Cp_calculatorVPSP, Cp_calculatorVP
 
 # Flight conditions parameters
 AoA = 5
