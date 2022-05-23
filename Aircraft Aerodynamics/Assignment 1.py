@@ -10,7 +10,7 @@ from Cp_calculator import Cp_calculatorSP, Cp_calculatorVP, Cp_calculatorVPSP
 # Flight conditions parameters
 AoA = 5     #deg
 V_fs = 1    #m/s
-
+M = 0.3
 
 # Initiate airfoil selector
 Naca = NACAcalculator()
@@ -44,8 +44,9 @@ plt.axis('equal')
 plt.legend()
 #plt.show()
 
-Results1 = Cp_calculatorVPSP(X1, Y1, Geom1[0], Geom1[1], Geom1[2], Geom1[3], Geom1[4], V_fs, Geom1[5])
-Results2 = Cp_calculatorVPSP(X2, Y2, Geom2[0], Geom2[1], Geom2[2], Geom2[3], Geom2[4], V_fs, Geom2[5])
+AoAr = AoA * np.pi/180
+Results1 = Cp_calculatorVPSP(X1, Y1, Geom1[0], Geom1[1], Geom1[2], Geom1[3], Geom1[4], V_fs, AoAr)
+Results2 = Cp_calculatorVPSP(X2, Y2, Geom2[0], Geom2[1], Geom2[2], Geom2[3], Geom2[4], V_fs, AoAr)
 
 fig1 = plt.figure()
 
