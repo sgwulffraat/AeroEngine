@@ -1,8 +1,6 @@
 import numpy as np
 import math as math
-from StreamlineVP import STREAMLINE_VPM
-from matplotlib import path
-import scipy.integrate as intg
+
 
 def Cp_calculatorSP(Xdata, Ydata, XC, YC, S, phi, beta, V_fs, AoAr):
     # Number of panels
@@ -414,3 +412,4 @@ def Cp_calculatorVPSP(Xdata, Ydata, XC, YC, S, phi, beta, V_fs, AoAr):
     print("  SPVP : %2.8f" % CM)  # From this SPVP code
 
     return Cp
+
