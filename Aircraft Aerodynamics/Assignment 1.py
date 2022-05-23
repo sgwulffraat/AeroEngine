@@ -6,6 +6,7 @@ from Airfoilimporter import import_airfoil
 from Airfoilgeometrycalculator import airfoil_geometery
 from Cp_calculator import Cp_calculatorSP, Cp_calculatorVP, Cp_calculatorVPSP
 
+
 # Flight conditions parameters
 AoA = 5     #deg
 V_fs = 1    #m/s

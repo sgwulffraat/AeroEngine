@@ -412,3 +412,4 @@ def Cp_calculatorVPSP(Xdata, Ydata, XC, YC, S, phi, beta, V_fs, AoAr):
     print("  SPVP : %2.8f" % CM)  # From this SPVP code
 
     return Cp
+

@@ -1,4 +1,4 @@
-
+45
 import numpy as np
 import math as math
 import matplotlib.pyplot as plt
@@ -18,7 +18,7 @@ AoAR = AoA * (np.pi / 180)  # Angle of attack [rad]
 # Plotting flags
 flagPlot = [0,  # Airfoil with panel normal vectors
             0,  # Geometry boundary pts, control pts, first panel, second panel
-            0,  # Cp vectors at airfoil surface panels
+            1,  # Cp vectors at airfoil surface panels
             1]  # Pressure coefficient comparison (XFOIL vs. VPM)
 
 # Initiate airfoil selector
