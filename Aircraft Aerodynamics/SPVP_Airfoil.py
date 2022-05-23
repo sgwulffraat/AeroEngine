@@ -1,4 +1,4 @@
-
+45
 import numpy as np
 import math as math
 import matplotlib.pyplot as plt
@@ -11,6 +11,7 @@ from COMPUTE_KL_VPM import COMPUTE_KL_VPM
 # User-defined knowns
 Vinf = 1  # Freestream velocity [] (just leave this at 1)
 AoA = 5  # Angle of attack [deg]
+NACA = '0012'  # NACA airfoil to load [####]
 
 # Convert angle of attack to radians
 AoAR = AoA * (np.pi / 180)  # Angle of attack [rad]
@@ -18,7 +19,7 @@ AoAR = AoA * (np.pi / 180)  # Angle of attack [rad]
 # Plotting flags
 flagPlot = [0,  # Airfoil with panel normal vectors
             0,  # Geometry boundary pts, control pts, first panel, second panel
-            0,  # Cp vectors at airfoil surface panels
+            1,  # Cp vectors at airfoil surface panels
             1]  # Pressure coefficient comparison (XFOIL vs. VPM)
 
 # Initiate airfoil selector
@@ -77,12 +78,7 @@ beta[beta > 2 * np.pi] = beta[beta > 2 * np.pi] - 2 * np.pi  # Make all panel an
 
 # Geometric integrals for SPM and VPM (normal [I,K] and tangential [J,L])
 I, J = COMPUTE_IJ_SPM(XC, YC, XB, YB, phi, S)  # Call COMPUTE_IJ_SPM function (Refs [2] and [3])
-print("I =", I)
-# print("I = ", I)
-# print("J = ", J)
 K, L = COMPUTE_KL_VPM(XC, YC, XB, YB, phi, S)  # Call COMPUTE_KL_VPM function (Refs [6] and [7])
-# print("K = ", K)
-# print("L = ", L)
 
 # Populate A matrix
 # - Simpler option: A = I + np.pi*np.eye(numPan,numPan)

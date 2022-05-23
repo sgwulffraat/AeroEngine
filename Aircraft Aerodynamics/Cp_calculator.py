@@ -1,6 +1,8 @@
 import numpy as np
 import math as math
-
+from StreamlineVP import STREAMLINE_VPM
+from matplotlib import path
+import scipy.integrate as intg
 
 def Cp_calculatorSP(Xdata, Ydata, XC, YC, S, phi, beta, V_fs, AoAr):
     # Number of panels
