@@ -1,41 +1,48 @@
 from Airfoilselector import NACAcalculator
-import math as m
 import numpy as np
 import matplotlib.pyplot as plt
 from Airfoilimporter import import_airfoil
 from Airfoilgeometrycalculator import airfoil_geometery
-from Cp_calculator import Cp_calculatorSP, Cp_calculatorVP, Cp_calculatorVPSP
+from Cp_calculator import Cp_calculatorVPSP
+
+# %% INPUTS ##
 
 # Flight conditions parameters
 AoA = 5     #deg
 V_fs = 1    #m/s
-M = 0.3
 
 # Initiate airfoil selector
 Naca = NACAcalculator()
 
-# Importing Airfoil Geometry
+# %% COMPUTATIONS ##
+
+# Transfer Angle of attack to radians
+AoAr = AoA * np.pi/180
+
+# Importing selected airfoil geometry from DAT file
 AF1 = import_airfoil(Naca[2])
 AF2 = import_airfoil(Naca[3])
-X1 = AF1[0]
-Y1 = -AF1[1]
-X2 = AF2[0]
-Y2 = -AF2[1]
+X1 = AF1[0]     # x coordinates of the first airfoil
+Y1 = -AF1[1]    # y coordinates of the first airfoil
+X2 = AF2[0]     # x coordinates of the second airfoil
+Y2 = -AF2[1]    # y coordinates of the first airfoil
 
 
-#Geometery parameters
-Geom1 = airfoil_geometery(X1, Y1, AoA)
-Geom2 = airfoil_geometery(X2, Y2, AoA)
+# Using DAT file to compute geometery parameters
+XC1, YC1, S1, phi1, beta1, N_pan1 = airfoil_geometery(X1, Y1, AoA)
+XC2, YC2, S2, phi2, beta2, N_pan2 = airfoil_geometery(X2, Y2, AoA)
 
+# Computing results using Vortex Panel and Source Panel methods drawn from [1]
+Results1 = Cp_calculatorVPSP(X1, Y1, YC1, S1, phi1, beta1, N_pan1, V_fs, AoAr)
+Results2 = Cp_calculatorVPSP(X2, Y2, YC2, S2, phi2, beta2, N_pan2, V_fs, AoAr)
 
-# %% PLOTTING
+# %% PLOTTING ###
 
-# Plot the paneled geometry
+# Plotting the paneled geometry
 fig = plt.figure(1)
 plt.plot(X1, Y1, color='orange', marker='o', markersize = 3, label = Naca[2])
 plt.plot(X2, Y2, color='blue', marker='o', markersize = 3, label = Naca[3])
 plt.plot(0, 0, color='w', label = "AoA = "+str(AoA)+"\N{DEGREE SIGN}")
-plt.plot(0, 0, color='w', label = "M = "+str(M))
 plt.xlabel('X-Axis')
 plt.ylabel('Y-Axis')
 plt.title('Panel Geometry')
@@ -43,15 +50,11 @@ plt.axis('equal')
 plt.legend()
 #plt.show()
 
-AoAr = AoA * np.pi/180
-Results1 = Cp_calculatorVPSP(X1, Y1, Geom1[0], Geom1[1], Geom1[2], Geom1[3], Geom1[4], V_fs, AoAr)
-Results2 = Cp_calculatorVPSP(X2, Y2, Geom2[0], Geom2[1], Geom2[2], Geom2[3], Geom2[4], V_fs, AoAr)
-
-fig1 = plt.figure()
-
-midIndS = int(np.floor(len(Results1)/2))                    # Airfoil middle index for VPM data
-plt.plot(Geom1[0][midIndS + 1:len(Geom1[0])], Results1[midIndS + 1:len(Geom1[0])], markerfacecolor='b', label='VPM Upper')
-plt.plot(Geom1[0][0:midIndS], Results1[0:midIndS], markerfacecolor='r', label='VPM Lower')
+# Plotting the pressure distribution
+fig1 = plt.figure() # Airfoil middle point of VPM data
+midpoint = int(np.floor(len(Results1)/2)) # Separating top and bottom side of airfoil
+plt.plot(XC1[midpoint + 1:len(XC1)], Results1[midpoint + 1:len(XC1)], markerfacecolor='b', label='VPM Upper')
+plt.plot(XC1[0:midpoint], Results1[0:midpoint], markerfacecolor='r', label='VPM Lower')
 plt.gca().invert_yaxis()
 plt.xlim([0,1])
 plt.xlabel('X-Axis')
@@ -60,14 +63,3 @@ plt.title('C_p distribution')
 plt.legend()
 plt.grid()
 plt.show()
-
-#plt.legend()
-# print(Results1[1])
-# plot2 = plt.figure(3)
-# plt.cla()
-# plt.contourf(Results1[2],Results1[3],Results1[1],500,cmap='jet')            # Plot contour
-# plt.fill(X1,Y1,'k')                                                         # Plot airfoil as black polygon
-# plt.xlabel('X Units')                                                       # Set X-label
-# plt.ylabel('Y Units')                                                       # Set Y-label
-# plt.gca().set_aspect('equal')                                               # Set axes equal
-# plt.show()                                                                  # Display plot
