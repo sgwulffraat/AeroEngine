@@ -4,15 +4,17 @@ import matplotlib.pyplot as plt
 from Airfoilimporter import import_airfoil
 from Airfoilgeometrycalculator import airfoil_geometery
 from Cp_calculator import Cp_calculatorVPSP
-
+from XFOIL import xfoil
 # %% INPUTS ##
 
 # Flight conditions parameters
 AoA = 5     #deg
 V_fs = 1    #m/s
 
+
 # Initiate airfoil selector
 Naca = NACAcalculator()
+
 
 # %% COMPUTATIONS ##
 
@@ -27,14 +29,25 @@ Y1 = -AF1[1]    # y coordinates of the first airfoil
 X2 = AF2[0]     # x coordinates of the second airfoil
 Y2 = -AF2[1]    # y coordinates of the first airfoil
 
-
 # Using DAT file to compute geometery parameters
 XC1, YC1, S1, phi1, beta1, N_pan1 = airfoil_geometery(X1, Y1, AoA)
 XC2, YC2, S2, phi2, beta2, N_pan2 = airfoil_geometery(X2, Y2, AoA)
 
 # Computing results using Vortex Panel and Source Panel methods drawn from [1]
-Results1 = Cp_calculatorVPSP(X1, Y1, YC1, S1, phi1, beta1, N_pan1, V_fs, AoAr)
-Results2 = Cp_calculatorVPSP(X2, Y2, YC2, S2, phi2, beta2, N_pan2, V_fs, AoAr)
+Results1 = Cp_calculatorVPSP(X1, Y1, XC1, YC1, S1, phi1, beta1, V_fs, AoAr)
+Results2 = Cp_calculatorVPSP(X2, Y2, XC2, YC2, S2, phi2, beta2, V_fs, AoAr)
+
+# %% XFOIL INTERGRATION ###
+
+# Getting naca code in the form of e.g. '0012'
+NACAcode1 = Naca[2][4:]
+NACAcode2 = Naca[3][4:]
+Numnodes1 = len(X1)
+
+# Computing CP array from xfoil
+xfoil_x_u_1, xfoil_x_l_1, xfoil_cp_u_1, xfoil_cp_l_1 = xfoil(NACAcode1,AoA,Numnodes1)
+# xfoil_cp_u_2, xfoil_cp_l_2 = xfoil(NACAcode2,AoA,Numnodes2)
+
 
 # %% PLOTTING ###
 
@@ -55,6 +68,8 @@ fig1 = plt.figure() # Airfoil middle point of VPM data
 midpoint = int(np.floor(len(Results1)/2)) # Separating top and bottom side of airfoil
 plt.plot(XC1[midpoint + 1:len(XC1)], Results1[midpoint + 1:len(XC1)], markerfacecolor='b', label='VPM Upper')
 plt.plot(XC1[0:midpoint], Results1[0:midpoint], markerfacecolor='r', label='VPM Lower')
+plt.plot(xfoil_x_u_1, xfoil_cp_u_1, label= 'XFOIL Upper')
+plt.plot(xfoil_x_l_1, xfoil_cp_l_1, label='XFOIL Lower')
 plt.gca().invert_yaxis()
 plt.xlim([0,1])
 plt.xlabel('X-Axis')
