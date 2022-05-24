@@ -11,12 +11,14 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
+sys.path.append('XFOIL6.99')
 
 # %% CREATE LOADING FILE
 
 # Knowns
-NACA = '0012'
-AoA = '0'
+NACA = '0008'
+AoA = '4'
 numNodes = '170'
 saveFlnmAF = 'Save_Airfoil.txt'
 saveFlnmCp = 'Save_Cp.txt'
@@ -49,7 +51,7 @@ if os.path.exists(xfoilFlnm):
     os.remove(xfoilFlnm)
 
 # %% READ DATA FILE: AIRFOIL
-flnm = 'naca' + NACA + '.dat'
+flnm  = saveFlnmAF
 
 
 # Load the data from the text file
