@@ -41,5 +41,4 @@ def airfoil_geometery(Xdata, Ydata, AoA):
     beta = delta - (AoAr)  # Angle between freestream and panel normal [rad]
     beta[beta > 2 * np.pi] = beta[beta > 2 * np.pi] - 2 * np.pi
 
-
-    return XC, YC, S, phi, beta, AoAr
+    return XC, YC, S, phi, beta, N_pan
