@@ -57,8 +57,8 @@ Numnodes1 = len(X1)
 Numnodes2 = len(X2)
 
 # Computing CP array from xfoil
-xfoil_cp_u_1, xfoil_cp_l_1 = xfoil(NACAcode1, AoA, Numnodes1, Y1)
-xfoil_cp_u_2, xfoil_cp_l_2 = xfoil(NACAcode2, AoA, Numnodes2, Y2)
+xfoil_cp_u_1, xfoil_cp_l_1, xfoil_x_u_1, xfoil_x_l_1 = xfoil(NACAcode1, AoA, Numnodes1, AF1[1])
+xfoil_cp_u_2, xfoil_cp_l_2, xfoil_x_u_2, xfoil_x_l_2  = xfoil(NACAcode2, AoA, Numnodes2, AF2[1])
 
 
 # %% PLOTTING ###
@@ -80,8 +80,8 @@ fig1 = plt.figure() # Airfoil middle point of VPM data
 midpoint = int(np.floor(len(Results1)/2)) # Separating top and bottom side of airfoil
 plt.plot(XC1[midpoint + 1:len(XC1)], Results1[midpoint + 1:len(XC1)], markerfacecolor='b', label='Upper')
 plt.plot(XC1[0:midpoint], Results1[0:midpoint], markerfacecolor='r', label='Lower')
-plt.plot(X1_U, xfoil_cp_u_1, label= 'XFOIL Upper')
-plt.plot(X1_L, xfoil_cp_l_1, label='XFOIL Lower')
+plt.plot(xfoil_x_u_1, xfoil_cp_u_1, label= 'XFOIL Upper')
+plt.plot(xfoil_x_l_1, xfoil_cp_l_1, label='XFOIL Lower')
 plt.gca().invert_yaxis()
 plt.xlim([0,1])
 plt.xlabel('X-Axis')

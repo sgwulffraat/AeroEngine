@@ -62,6 +62,8 @@ def xfoil(NACA, AoA, numNodes, YB):
     print(Cp_0)
     Cp_U = Cp_0[YB >= 0]
     Cp_L = Cp_0[YB < 0]
+    X_U = X_0[YB >= 0]
+    X_L = X_0[YB < 0]
 
-    return Cp_U, Cp_L
+    return Cp_U, Cp_L, X_U, X_L
 
