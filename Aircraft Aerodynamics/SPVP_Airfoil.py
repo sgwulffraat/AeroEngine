@@ -9,7 +9,7 @@ from COMPUTE_KL_VPM import COMPUTE_KL_VPM
 
 
 # User-defined knowns
-Vinf = 1  # Freestream velocity [] (just leave this at 1)
+Vinf = 1  # Freestream velocity
 AoA = 5  # Angle of attack [deg]
 
 # Convert angle of attack to radians

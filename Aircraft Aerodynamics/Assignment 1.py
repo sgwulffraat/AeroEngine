@@ -29,6 +29,17 @@ Y1 = -AF1[1]    # y coordinates of the first airfoil
 X2 = AF2[0]     # x coordinates of the second airfoil
 Y2 = -AF2[1]    # y coordinates of the first airfoil
 
+# Split airfoil into (U)pper and (L)ower
+X1_U = X1[Y1 >= 0]
+X1_L = X1[Y1 < 0]
+Y1_U = Y1[Y1 >= 0]
+Y1_L = Y1[Y1 < 0]
+
+X2_U = X2[Y2 >= 0]
+X2_L = X2[Y2 < 0]
+Y2_U = Y2[Y2 >= 0]
+Y2_L = Y2[Y2 < 0]
+
 # Using DAT file to compute geometery parameters
 XC1, YC1, S1, phi1, beta1, N_pan1 = airfoil_geometery(X1, Y1, AoA)
 XC2, YC2, S2, phi2, beta2, N_pan2 = airfoil_geometery(X2, Y2, AoA)
@@ -43,10 +54,11 @@ Results2 = Cp_calculatorVPSP(X2, Y2, XC2, YC2, S2, phi2, beta2, V_fs, AoAr)
 NACAcode1 = Naca[2][4:]
 NACAcode2 = Naca[3][4:]
 Numnodes1 = len(X1)
+Numnodes2 = len(X2)
 
 # Computing CP array from xfoil
-xfoil_x_u_1, xfoil_x_l_1, xfoil_cp_u_1, xfoil_cp_l_1 = xfoil(NACAcode1,AoA,Numnodes1)
-# xfoil_cp_u_2, xfoil_cp_l_2 = xfoil(NACAcode2,AoA,Numnodes2)
+xfoil_cp_u_1, xfoil_cp_l_1 = xfoil(NACAcode1, AoA, Numnodes1, Y1)
+xfoil_cp_u_2, xfoil_cp_l_2 = xfoil(NACAcode2, AoA, Numnodes2, Y2)
 
 
 # %% PLOTTING ###
@@ -66,10 +78,10 @@ plt.legend()
 # Plotting the pressure distribution
 fig1 = plt.figure() # Airfoil middle point of VPM data
 midpoint = int(np.floor(len(Results1)/2)) # Separating top and bottom side of airfoil
-plt.plot(XC1[midpoint + 1:len(XC1)], Results1[midpoint + 1:len(XC1)], markerfacecolor='b', label='VPM Upper')
-plt.plot(XC1[0:midpoint], Results1[0:midpoint], markerfacecolor='r', label='VPM Lower')
-plt.plot(xfoil_x_u_1, xfoil_cp_u_1, label= 'XFOIL Upper')
-plt.plot(xfoil_x_l_1, xfoil_cp_l_1, label='XFOIL Lower')
+plt.plot(XC1[midpoint + 1:len(XC1)], Results1[midpoint + 1:len(XC1)], markerfacecolor='b', label='Upper')
+plt.plot(XC1[0:midpoint], Results1[0:midpoint], markerfacecolor='r', label='Lower')
+plt.plot(X1_U, xfoil_cp_u_1, label= 'XFOIL Upper')
+plt.plot(X1_L, xfoil_cp_l_1, label='XFOIL Lower')
 plt.gca().invert_yaxis()
 plt.xlim([0,1])
 plt.xlabel('X-Axis')
