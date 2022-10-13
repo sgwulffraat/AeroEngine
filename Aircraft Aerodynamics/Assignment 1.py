@@ -43,6 +43,8 @@ Y2_L = Y2[Y2 < 0]
 # Using DAT file to compute geometery parameters
 XC1, YC1, S1, phi1, beta1, N_pan1 = airfoil_geometery(X1, Y1, AoA)
 XC2, YC2, S2, phi2, beta2, N_pan2 = airfoil_geometery(X2, Y2, AoA)
+XC1U = XC1[YC1 >= 0]
+XC1L = XC1[YC1 < 0]
 
 # Computing results using Vortex Panel and Source Panel methods drawn from [1]
 Results1 = Cp_calculatorVPSP(X1, Y1, XC1, YC1, S1, phi1, beta1, V_fs, AoAr)
@@ -57,8 +59,8 @@ Numnodes1 = len(X1)
 Numnodes2 = len(X2)
 
 # Computing CP array from xfoil
-xfoil_cp_u_1, xfoil_cp_l_1, xfoil_x_u_1, xfoil_x_l_1 = xfoil(NACAcode1, AoA, Numnodes1, AF1[1])
-xfoil_cp_u_2, xfoil_cp_l_2, xfoil_x_u_2, xfoil_x_l_2  = xfoil(NACAcode2, AoA, Numnodes2, AF2[1])
+xfoil_cp_u_1, xfoil_cp_l_1, xfoil_x_u_1, xfoil_x_l_1 = xfoil(NACAcode1, AoA, Numnodes1)
+xfoil_cp_u_2, xfoil_cp_l_2, xfoil_x_u_2, xfoil_x_l_2  = xfoil(NACAcode2, AoA, Numnodes2)
 
 
 # %% PLOTTING ###
@@ -75,7 +77,7 @@ plt.axis('equal')
 plt.legend()
 #plt.show()
 
-# Plotting the pressure distribution
+# Plotting the pressure distribution Airfoil 1
 fig1 = plt.figure() # Airfoil middle point of VPM data
 midpoint = int(np.floor(len(Results1)/2)) # Separating top and bottom side of airfoil
 plt.plot(XC1[midpoint + 1:len(XC1)], Results1[midpoint + 1:len(XC1)], markerfacecolor='b', label='Upper')
@@ -86,7 +88,23 @@ plt.gca().invert_yaxis()
 plt.xlim([0,1])
 plt.xlabel('X-Axis')
 plt.ylabel('C_p')
-plt.title('C_p distribution')
+plt.title("Cp distribution "+str(Naca[2]))
+plt.legend()
+plt.grid()
+plt.show()
+
+# Plotting the pressure distribution Airfoil 2
+fig1 = plt.figure() # Airfoil middle point of VPM data
+midpoint = int(np.floor(len(Results1)/2)) # Separating top and bottom side of airfoil
+plt.plot(XC2[midpoint + 1:len(XC2)], Results2[midpoint + 1:len(XC2)], markerfacecolor='b', label='Upper')
+plt.plot(XC2[0:midpoint], Results2[0:midpoint], markerfacecolor='r', label='Lower')
+plt.plot(xfoil_x_u_2, xfoil_cp_u_2, label= 'XFOIL Upper')
+plt.plot(xfoil_x_l_2, xfoil_cp_l_2, label='XFOIL Lower')
+plt.gca().invert_yaxis()
+plt.xlim([0,1])
+plt.xlabel('X-Axis')
+plt.ylabel('C_p')
+plt.title("Cp distribution "+str(Naca[3]))
 plt.legend()
 plt.grid()
 plt.show()
