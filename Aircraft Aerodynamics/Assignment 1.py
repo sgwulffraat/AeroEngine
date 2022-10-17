@@ -94,7 +94,7 @@ plt.grid()
 plt.show()
 
 # Plotting the pressure distribution Airfoil 2
-fig1 = plt.figure() # Airfoil middle point of VPM data
+fig2 = plt.figure() # Airfoil middle point of VPM data
 midpoint = int(np.floor(len(Results1)/2)) # Separating top and bottom side of airfoil
 plt.plot(XC2[midpoint + 1:len(XC2)], Results2[midpoint + 1:len(XC2)], markerfacecolor='b', label='Upper')
 plt.plot(XC2[0:midpoint], Results2[0:midpoint], markerfacecolor='r', label='Lower')
