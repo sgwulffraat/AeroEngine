@@ -62,7 +62,7 @@ Numnodes2 = len(X2)
 xfoil_cp_u_1, xfoil_cp_l_1, xfoil_x_u_1, xfoil_x_l_1, xfoil_cl_1 = xfoil(NACAcode1, AoA, Numnodes1)
 xfoil_cp_u_2, xfoil_cp_l_2, xfoil_x_u_2, xfoil_x_l_2, xfoil_cl_2 = xfoil(NACAcode2, AoA, Numnodes2)
 
-# Lift Polar
+# %% LIFT POLAR %% ###
 alpha = [-9, 0, 9]
 cl_polar1 = []
 cl_polar2 = []
@@ -74,7 +74,7 @@ for i in alpha:
     xc1, yc1, s1, phi_1, beta_1, N_pan_1 = airfoil_geometery(X1, Y1, i)
     xc2, yc2, s2, phi_2, beta_2, N_pan_2 = airfoil_geometery(X2, Y2, i)
     cp_u_1, cp_l_1, x_u_1, x_l_1, cl_1 = xfoil(NACAcode1, i, Numnodes1)
-    cp_u_2, cp_l_2, x_u_2, x_l_2, cl_2 = xfoil(NACAcode2, i, Numnodes2)
+    cp_u_2, cp_l_2, x_u_2, x_l_2, cl_2 = xfoil("0012", i, Numnodes2) #REPLACE WITH NACAcode2 once reference is done
     Cp_1, Cl_1, Cm_1 = Cp_calculatorVPSP(X1, Y1, XC1, YC1, S1, phi_1, beta_1, V_fs, i_r)
     Cp_2, Cl_2, Cm_2 = Cp_calculatorVPSP(X2, Y2, XC2, YC2, S2, phi_2, beta_2, V_fs, i_r)
     print("cl_1 =", cl_1)
@@ -82,8 +82,14 @@ for i in alpha:
     cl_polar2.append(Cl_2)
     cl_polar1_xfoil.append(cl_1)
     cl_polar2_xfoil.append(cl_2)
-print(cl_polar1)
-print(cl_polar1_xfoil)
+
+# Reference Data
+abbot = np.loadtxt("Lift_polar_abbot.dat", skiprows=6)
+abbot_alpha = abbot[:, 0]
+abbot_cl = abbot[:, 1]
+gregory = np.loadtxt("Lift_polar_gregory.dat", skiprows=3)
+gregory_alpha = gregory[:, 0]
+gregory_cl = gregory[:, 1]
 
 # %% PLOTTING ###
 
@@ -125,8 +131,31 @@ plt.plot(xfoil_x_l_2, xfoil_cp_l_2, linestyle=':', color = 'blue', marker='o', l
 plt.gca().invert_yaxis()
 plt.xlim([0,1])
 plt.xlabel('X-Axis')
-plt.ylabel('C_p')
-plt.title("Cp distribution "+str(Naca[3]))
+plt.ylabel('Cp')
+plt.title("Cp distribution " + str(Naca[3]))
+plt.legend()
+plt.grid()
+plt.show()
+
+# # Plotting lift polar airfoil 1
+# plt.plot(alpha, cl_polar1_xfoil, label='Xfoil', color='orange')
+# plt.plot(alpha, cl_polar1, label='Model', color='blue')
+# plt.xlabel("alpha")
+# plt.ylabel('Cl')
+# plt.title("Lift polar " + str(Naca[2]))
+# plt.legend()
+# plt.grid()
+# plt.show()
+
+
+# Plotting lift polar airfoil 2
+plt.plot(abbot_alpha, abbot_cl, label='Abbot', linestyle="", marker='o', markersize=3, color='red')
+plt.plot(gregory_alpha, gregory_cl, label='Gregory', linestyle="", marker='o', markersize=3, color='green')
+plt.plot(alpha, cl_polar2_xfoil, label='Xfoil', color='orange')
+plt.plot(alpha, cl_polar2, label='Model', color='blue')
+plt.xlabel("alpha")
+plt.ylabel('Cl')
+plt.title("Lift polar naca 0012")
 plt.legend()
 plt.grid()
 plt.show()
