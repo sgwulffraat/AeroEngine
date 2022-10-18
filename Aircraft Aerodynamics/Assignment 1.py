@@ -59,9 +59,31 @@ Numnodes1 = len(X1)
 Numnodes2 = len(X2)
 
 # Computing CP array from xfoil
-xfoil_cp_u_1, xfoil_cp_l_1, xfoil_x_u_1, xfoil_x_l_1 = xfoil(NACAcode1, AoA, Numnodes1)
-xfoil_cp_u_2, xfoil_cp_l_2, xfoil_x_u_2, xfoil_x_l_2  = xfoil(NACAcode2, AoA, Numnodes2)
+xfoil_cp_u_1, xfoil_cp_l_1, xfoil_x_u_1, xfoil_x_l_1, xfoil_cl_1 = xfoil(NACAcode1, AoA, Numnodes1)
+xfoil_cp_u_2, xfoil_cp_l_2, xfoil_x_u_2, xfoil_x_l_2, xfoil_cl_2 = xfoil(NACAcode2, AoA, Numnodes2)
 
+# Lift Polar
+alpha = [-9, 0, 9]
+cl_polar1 = []
+cl_polar2 = []
+cl_polar1_xfoil = []
+cl_polar2_xfoil = []
+for i in alpha:
+    print("i=", i)
+    i_r = i * np.pi/180
+    xc1, yc1, s1, phi_1, beta_1, N_pan_1 = airfoil_geometery(X1, Y1, i)
+    xc2, yc2, s2, phi_2, beta_2, N_pan_2 = airfoil_geometery(X2, Y2, i)
+    cp_u_1, cp_l_1, x_u_1, x_l_1, cl_1 = xfoil(NACAcode1, i, Numnodes1)
+    cp_u_2, cp_l_2, x_u_2, x_l_2, cl_2 = xfoil(NACAcode2, i, Numnodes2)
+    Cp_1, Cl_1, Cm_1 = Cp_calculatorVPSP(X1, Y1, XC1, YC1, S1, phi_1, beta_1, V_fs, i_r)
+    Cp_2, Cl_2, Cm_2 = Cp_calculatorVPSP(X2, Y2, XC2, YC2, S2, phi_2, beta_2, V_fs, i_r)
+    print("cl_1 =", cl_1)
+    cl_polar1.append(Cl_1)
+    cl_polar2.append(Cl_2)
+    cl_polar1_xfoil.append(cl_1)
+    cl_polar2_xfoil.append(cl_2)
+print(cl_polar1)
+print(cl_polar1_xfoil)
 
 # %% PLOTTING ###
 
@@ -108,3 +130,4 @@ plt.title("Cp distribution "+str(Naca[3]))
 plt.legend()
 plt.grid()
 plt.show()
+

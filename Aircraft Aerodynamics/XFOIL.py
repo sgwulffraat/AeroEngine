@@ -12,6 +12,7 @@ def xfoil(NACA, AoA, numNodes):
     numNodes = str(numNodes-1)
     saveFlnmAF = 'Save_Airfoil.txt'
     saveFlnmCp = 'Save_Cp.txt'
+    saveFlnmPol = 'Save_Pol.txt'
     xfoilFlnm = 'xfoil_input.txt'
 
     # Delete files if they exist
@@ -21,6 +22,7 @@ def xfoil(NACA, AoA, numNodes):
     if os.path.exists(saveFlnmCp):
         os.remove(saveFlnmCp)
 
+
     # Create the airfoil
     fid = open(xfoilFlnm, "w")
     fid.write("NACA " + NACA + "\n")
@@ -28,9 +30,20 @@ def xfoil(NACA, AoA, numNodes):
     fid.write("N " + numNodes + "\n")
     fid.write("\n\n")
     fid.write("PSAV " + saveFlnmAF + "\n")
+    if os.path.exists(saveFlnmAF):
+        fid.write("y \n")
     fid.write("OPER\n")
+    fid.write("Pacc 1 \n")
+    fid.write("\n\n")
     fid.write("ALFA " + AoA + "\n")
     fid.write("CPWR " + saveFlnmCp + "\n")
+    if os.path.exists(saveFlnmCp):
+        fid.write("y \n")
+    fid.write("PWRT\n")
+    fid.write(saveFlnmPol + "\n")
+    if os.path.exists(saveFlnmPol):
+        fid.write("y \n")
+
     fid.close()
 
     # Run the XFoil calling command
@@ -52,9 +65,10 @@ def xfoil(NACA, AoA, numNodes):
     Y_0 = dataBuffer[:, 1]
     Cp_0 = dataBuffer[:, 2]
 
-    # Delete file after loading
-    if os.path.exists(saveFlnmCp):
-        os.remove(saveFlnmCp)
+    # Polar
+    dataBuffer2 = np.loadtxt(saveFlnmPol, skiprows=12)
+    Cl = dataBuffer2[1]
+
 
     # %% EXTRACT UPPER AND LOWER AIRFOIL DATA
 
@@ -64,5 +78,5 @@ def xfoil(NACA, AoA, numNodes):
     X_U = X_0[Y_0 >= 0]
     X_L = X_0[Y_0 < 0]
 
-    return Cp_U, Cp_L, X_U, X_L
+    return Cp_U, Cp_L, X_U, X_L, Cl
 
