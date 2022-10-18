@@ -47,8 +47,8 @@ XC1U = XC1[YC1 >= 0]
 XC1L = XC1[YC1 < 0]
 
 # Computing results using Vortex Panel and Source Panel methods drawn from [1]
-Results1 = Cp_calculatorVPSP(X1, Y1, XC1, YC1, S1, phi1, beta1, V_fs, AoAr)
-Results2 = Cp_calculatorVPSP(X2, Y2, XC2, YC2, S2, phi2, beta2, V_fs, AoAr)
+Cp1, Cl1, Cm1 = Cp_calculatorVPSP(X1, Y1, XC1, YC1, S1, phi1, beta1, V_fs, AoAr)
+Cp2, Cl2, Cm2 = Cp_calculatorVPSP(X2, Y2, XC2, YC2, S2, phi2, beta2, V_fs, AoAr)
 
 # %% XFOIL INTERGRATION ###
 
@@ -79,9 +79,9 @@ plt.legend()
 
 # Plotting the pressure distribution Airfoil 1
 fig1 = plt.figure() # Airfoil middle point of VPM data
-midpoint = int(np.floor(len(Results1)/2)) # Separating top and bottom side of airfoil
-plt.plot(XC1[midpoint + 1:len(XC1)], Results1[midpoint + 1:len(XC1)],  color = 'green', marker='^', label='Upper')
-plt.plot(XC1[0:midpoint], Results1[0:midpoint], color = 'orange', marker='^', label='Lower')
+midpoint = int(np.floor(len(Cp1)/2)) # Separating top and bottom side of airfoil
+plt.plot(XC1[midpoint + 1:len(XC1)], Cp1[midpoint + 1:len(XC1)],  color = 'green', marker='^', label='Upper')
+plt.plot(XC1[0:midpoint], Cp1[0:midpoint], color = 'orange', marker='^', label='Lower')
 plt.plot(xfoil_x_u_1, xfoil_cp_u_1, linestyle=':', color = 'red', marker='o', label= 'XFOIL Upper')
 plt.plot(xfoil_x_l_1, xfoil_cp_l_1, linestyle=':', color = 'blue', marker='o', label='XFOIL Lower')
 plt.gca().invert_yaxis()
@@ -95,9 +95,9 @@ plt.show()
 
 # Plotting the pressure distribution Airfoil 2
 fig2 = plt.figure() # Airfoil middle point of VPM data
-midpoint = int(np.floor(len(Results1)/2)) # Separating top and bottom side of airfoil
-plt.plot(XC2[midpoint + 1:len(XC2)], Results2[midpoint + 1:len(XC2)], color = 'green', marker='^', label='Upper')
-plt.plot(XC2[0:midpoint], Results2[0:midpoint], color = 'orange', marker='^', label='Lower')
+midpoint = int(np.floor(len(Cp1)/2)) # Separating top and bottom side of airfoil
+plt.plot(XC2[midpoint + 1:len(XC2)], Cp2[midpoint + 1:len(XC2)], color = 'green', marker='^', label='Upper')
+plt.plot(XC2[0:midpoint], Cp2[0:midpoint], color = 'orange', marker='^', label='Lower')
 plt.plot(xfoil_x_u_2, xfoil_cp_u_2, linestyle=':', color = 'red', marker='o', label= 'XFOIL Upper')
 plt.plot(xfoil_x_l_2, xfoil_cp_l_2, linestyle=':', color = 'blue', marker='o', label='XFOIL Lower')
 plt.gca().invert_yaxis()

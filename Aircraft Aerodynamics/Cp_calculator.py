@@ -143,4 +143,15 @@ def Cp_calculatorVPSP(Xdata, Ydata, XC, YC, S, phi, beta, V_fs, AoAr):
         Vt[i] = term1 + term2 + term3 + term4  # Compute tangential velocity on panel i
         Cp[i] = 1 - (Vt[i] / V_fs) ** 2  # Compute pressure coefficient on panel i
 
-    return Cp
+    # %% COMPUTE LIFT AND MOMENT COEFFICIENTS
+
+    # Compute normal and axial force coefficients
+    Cn = -Cp * S * np.sin(beta)  # Normal force coefficient []
+    CA = -Cp * S * np.cos(beta)  # Axial force coefficient []
+
+    # Compute lift and moment coefficients
+    Cl = sum(Cn * np.cos(AoAr)) - sum(
+        CA * np.sin(AoAr))  # Decompose axial and normal to lift coefficient []
+    Cm = sum(Cp * (XC - 0.25) * S * np.cos(phi))  # Moment coefficient []
+
+    return Cp, Cl, Cm
