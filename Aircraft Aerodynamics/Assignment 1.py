@@ -8,7 +8,7 @@ from XFOIL import xfoil
 # %% INPUTS ##
 
 # Flight conditions parameters
-AoA = 0     #deg
+AoA = 15     #deg
 V_fs = 1    #m/s
 
 
@@ -90,13 +90,24 @@ abbot_cl = abbot[:, 1]
 gregory = np.loadtxt("Lift_polar_gregory.dat", skiprows=3)
 gregory_alpha = gregory[:, 0]
 gregory_cl = gregory[:, 1]
+ladson_cp_6free_0 = np.loadtxt("CP_Ladson_6free_alpha_0.dat", skiprows=5)
+ladson_cp_6free_10 = np.loadtxt("CP_Ladson_6free_alpha_10.dat", skiprows=1)
+ladson_cp_6free_15 = np.loadtxt("CP_Ladson_6free_alpha_15.dat", skiprows=1)
+ladson_cp_3fixed_0 = np.loadtxt("CP_Ladson_3fixed_alpha_0.dat", skiprows=5)
+ladson_cp_3fixed_10 = np.loadtxt("CP_Ladson_3fixed_alpha_10.dat", skiprows=1)
+ladson_cp_3fixed_15 = np.loadtxt("CP_Ladson_3fixed_alpha_15.dat", skiprows=1)
+gregory_cp_0 =np.loadtxt("CP_Gregory_alpha_0.dat", skiprows=6)
+gregory_cp_10 =np.loadtxt("CP_Gregory_alpha_10.dat", skiprows=1)
+gregory_cp_15 =np.loadtxt("CP_Gregory_alpha_15.dat", skiprows=1)
+
+
 
 # %% PLOTTING ###
 
 # Plotting the paneled geometry
 fig = plt.figure(1)
-plt.plot(X1, Y1, color='orange', marker='o', markersize = 3, label = Naca[2])
-plt.plot(X2, Y2, color='blue', marker='o', markersize = 3, label = Naca[3])
+plt.plot(X1, Y1, color='orange', marker='o', markersize=3, label=Naca[2])
+plt.plot(X2, Y2, color='blue', marker='o', markersize=3, label=Naca[3])
 plt.plot(0, 0, color='w', label = "AoA = "+str(AoA)+"\N{DEGREE SIGN}")
 plt.xlabel('X-Axis')
 plt.ylabel('Y-Axis')
@@ -108,55 +119,74 @@ plt.legend()
 # Plotting the pressure distribution Airfoil 1
 fig1 = plt.figure() # Airfoil middle point of VPM data
 midpoint = int(np.floor(len(Cp1)/2)) # Separating top and bottom side of airfoil
-plt.plot(XC1[midpoint + 1:len(XC1)], Cp1[midpoint + 1:len(XC1)],  color = 'green', marker='^', label='Upper')
-plt.plot(XC1[0:midpoint], Cp1[0:midpoint], color = 'orange', marker='^', label='Lower')
 plt.plot(xfoil_x_u_1, xfoil_cp_u_1, linestyle=':', color = 'red', marker='o', label= 'XFOIL Upper')
 plt.plot(xfoil_x_l_1, xfoil_cp_l_1, linestyle=':', color = 'blue', marker='o', label='XFOIL Lower')
+plt.plot(XC1[midpoint + 1:len(XC1)], Cp1[midpoint + 1:len(XC1)],  color = 'green', marker='^', label='Upper')
+plt.plot(XC1[0:midpoint], Cp1[0:midpoint], color='orange', marker='^', label='Lower')
 plt.gca().invert_yaxis()
-plt.xlim([0,1])
-plt.xlabel('X-Axis')
+plt.xlim([0, 1])
+plt.xlabel('x/c')
 plt.ylabel('C_p')
 plt.title("Cp distribution "+str(Naca[2]))
 plt.legend()
 plt.grid()
+#plt.show()
+
+# Plotting the pressure distribution reference Airfoil
+fig3 = plt.figure() # Airfoil middle point of VPM data
+midpoint = int(np.floor(len(Cp1)/2)) # Separating top and bottom side of airfoil
+plt.plot(xfoil_x_u_1, xfoil_cp_u_1, color='blue', marker='o', label= 'XFOIL', markersize=2)
+plt.plot(xfoil_x_l_1, xfoil_cp_l_1, color='blue', marker='o', markersize=2)
+plt.plot(XC1, Cp1,  color='orange', marker='.', label='Model')
+plt.scatter(ladson_cp_6free_15[:, 0], ladson_cp_6free_15[:, 1], color='red', marker='^', s=4, label='Ladson Re=6E6, free transition')
+plt.scatter(ladson_cp_3fixed_15[:, 0], ladson_cp_3fixed_15[:, 1], color='green', marker='D', s=4, label='Ladson Re=3E6, fixed transition')
+plt.scatter(gregory_cp_15[:, 0], gregory_cp_15[:, 1], color='purple', marker='s', s=4, label='Gregory Re=3E6, free transition')
+plt.gca().invert_yaxis()
+plt.xlim([0, 1])
+plt.xlabel('x/c')
+plt.ylabel('Cp')
+plt.title("Cp distribution "+str(Naca[2]))
+plt.legend(loc='lower right')
+plt.grid()
 plt.show()
+
 
 # Plotting the pressure distribution Airfoil 2
 fig2 = plt.figure() # Airfoil middle point of VPM data
 midpoint = int(np.floor(len(Cp1)/2)) # Separating top and bottom side of airfoil
 plt.plot(XC2[midpoint + 1:len(XC2)], Cp2[midpoint + 1:len(XC2)], color = 'green', marker='^', label='Upper')
-plt.plot(XC2[0:midpoint], Cp2[0:midpoint], color = 'orange', marker='^', label='Lower')
-plt.plot(xfoil_x_u_2, xfoil_cp_u_2, linestyle=':', color = 'red', marker='o', label= 'XFOIL Upper')
-plt.plot(xfoil_x_l_2, xfoil_cp_l_2, linestyle=':', color = 'blue', marker='o', label='XFOIL Lower')
+plt.plot(XC2[0:midpoint], Cp2[0:midpoint], color='orange', marker='^', label='Lower')
+plt.plot(xfoil_x_u_2, xfoil_cp_u_2, linestyle=':', color='red', marker='o', label='XFOIL Upper')
+plt.plot(xfoil_x_l_2, xfoil_cp_l_2, linestyle=':', color='blue', marker='o', label='XFOIL Lower')
 plt.gca().invert_yaxis()
-plt.xlim([0,1])
-plt.xlabel('X-Axis')
+plt.xlim([0, 1])
+plt.xlabel('x/c')
 plt.ylabel('Cp')
 plt.title("Cp distribution " + str(Naca[3]))
 plt.legend()
 plt.grid()
-plt.show()
+#plt.show()
 
-# # Plotting lift polar airfoil 1
-# plt.plot(alpha, cl_polar1_xfoil, label='Xfoil', color='orange')
-# plt.plot(alpha, cl_polar1, label='Model', color='blue')
-# plt.xlabel("alpha")
-# plt.ylabel('Cl')
-# plt.title("Lift polar " + str(Naca[2]))
-# plt.legend()
-# plt.grid()
-# plt.show()
+# Plotting lift polar airfoil 1
+plt.plot(abbot_alpha, abbot_cl, label='Abbot', linestyle="", marker='o', markersize=3, color='red')
+plt.plot(gregory_alpha, gregory_cl, label='Gregory', linestyle="", marker='o', markersize=3, color='green')
+plt.plot(alpha, cl_polar1_xfoil, label='Xfoil', color='orange')
+plt.plot(alpha, cl_polar1, label='Model', color='blue')
+plt.xlabel("alpha")
+plt.ylabel('Cl')
+plt.title("Lift polar " + str(Naca[2]))
+plt.legend()
+plt.grid()
+#plt.show()
 
 
 # Plotting lift polar airfoil 2
-plt.plot(abbot_alpha, abbot_cl, label='Abbot', linestyle="", marker='o', markersize=3, color='red')
-plt.plot(gregory_alpha, gregory_cl, label='Gregory', linestyle="", marker='o', markersize=3, color='green')
 plt.plot(alpha, cl_polar2_xfoil, label='Xfoil', color='orange')
 plt.plot(alpha, cl_polar2, label='Model', color='blue')
 plt.xlabel("alpha")
 plt.ylabel('Cl')
-plt.title("Lift polar naca 0012")
+plt.title("Lift polar " + str(Naca[3]))
 plt.legend()
 plt.grid()
-plt.show()
+#plt.show()
 
