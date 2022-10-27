@@ -19,8 +19,6 @@ def xfoil(NACA, AoA, numNodes):
     if os.path.exists(saveFlnmAF):
         os.remove(saveFlnmAF)
 
-    if os.path.exists(saveFlnmCp):
-        os.remove(saveFlnmCp)
 
 
     # Create the airfoil
@@ -58,7 +56,15 @@ def xfoil(NACA, AoA, numNodes):
     # %% READ DATA FILE: PRESSURE COEFFICIENT
 
     # Load the data from the text file
-    dataBuffer = np.loadtxt(saveFlnmCp, skiprows=3)
+    fin = open(saveFlnmCp, 'r+')
+    fout = open("Save_Cpcheck.txt", 'w+')
+    lines = fin.readlines()
+    for line in lines:
+        fout.write(line.replace('-', ' -'))
+    fin.close()
+    fout.close()
+    dataBuffer = np.loadtxt('Save_Cpcheck.txt', skiprows=3)
+
 
     # Extract data from the loaded dataBuffer array
     X_0 = dataBuffer[:, 0]
