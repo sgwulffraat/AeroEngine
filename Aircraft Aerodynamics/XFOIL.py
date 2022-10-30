@@ -66,6 +66,7 @@ def xfoil(NACA, AoA, numNodes):
     dataBuffer = np.loadtxt('Save_Cpcheck.txt', skiprows=3)
 
 
+
     # Extract data from the loaded dataBuffer array
     X_0 = dataBuffer[:, 0]
     Y_0 = dataBuffer[:, 1]

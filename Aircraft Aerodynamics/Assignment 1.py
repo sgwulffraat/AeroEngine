@@ -201,6 +201,7 @@ plt.grid()
 plt.show()
 
 
+
 # Plotting lift polar airfoil 2
 fig5 = plt.figure()
 plt.plot(alpha, cl_polar2_xfoil, label='Xfoil', color='blue')
