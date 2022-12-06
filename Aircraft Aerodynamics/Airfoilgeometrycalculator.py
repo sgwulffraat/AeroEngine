@@ -11,15 +11,11 @@ def airfoil_geometery(Xdata, Ydata, AoA):
     for i in range(N_pan):
         edge[i] = (Xdata[i+1]-Xdata[i])*(Ydata[i+1]+Ydata[i])
     sumEdge = np.sum(edge)
-    print("X data unflipped")
-    print(Xdata)
 
     #If panels are CCW, flip them (don't if CW)
     if (sumEdge < 0):
         Xdata = np.flipud(Xdata)
         Ydata = np.flipud(Ydata)
-        print("X data flipped")
-        print(Xdata)
 
     #COMPUTE GEOMETRIC VARIABLES
 

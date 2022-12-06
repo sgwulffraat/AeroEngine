@@ -11,7 +11,7 @@
 
 ### Airfoil Parameter calculation ###
 def check_user_input(input):
-    if input == "Test camber":
+    if input == "Camber" or input == "Reference" or input == "Panels 1" or input == "Panels 2":
         print("Entry confirmed.")
         return True
     elif len(input) != 3:
@@ -46,10 +46,21 @@ def NACAcalculator(): #Ouput: (N1,N2)
     print("Enter first 3 digits of your student number: ...")
     sn = input()
     if check_user_input(sn) == True:
-        if sn == "Test camber":
-            NC = (12,12,"naca0012","naca4412")
+        if sn == "Camber":
+            flag = "Camber"
+            NC = (12,12,"naca0012","naca4412", flag)
+        elif sn == "Reference":
+            flag = "Reference"
+            NC = (12,12,"naca0012","naca0012", flag)
+        elif sn == "Panels 1":
+            flag = "Panels 1"
+            NC = (12,12,"naca0012","naca0012", flag)
+        elif sn == "Panels 2":
+            flag = "Panels 2"
+            NC = (12,12,"naca0012","naca0012", flag)
 
         else:
+            flag = "None"
             #Sum of digits
             N = int(str(sn)[0])+int(str(sn)[1])+int(str(sn)[2])
 
@@ -78,7 +89,7 @@ def NACAcalculator(): #Ouput: (N1,N2)
                 N_2 = "naca000" + str(N2)
             else:
                 N_2 = "naca00" + str(N2)
-            NC = (N1, N2, N_1, N_2)
+            NC = (N1, N2, N_1, N_2, flag)
         print()
         print("Selected Airfoils:", NC[2], "and", NC[3])
         print()
