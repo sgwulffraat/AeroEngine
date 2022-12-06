@@ -11,7 +11,10 @@
 
 ### Airfoil Parameter calculation ###
 def check_user_input(input):
-    if len(input) != 3:
+    if input == "Test camber":
+        print("Entry confirmed.")
+        return True
+    elif len(input) != 3:
         print("Invalid input detected...")
         print()
         return False
@@ -43,38 +46,41 @@ def NACAcalculator(): #Ouput: (N1,N2)
     print("Enter first 3 digits of your student number: ...")
     sn = input()
     if check_user_input(sn) == True:
+        if sn == "Test camber":
+            NC = (12,12,"naca0012","naca4412")
 
-        #Sum of digits
-        N = int(str(sn)[0])+int(str(sn)[1])+int(str(sn)[2])
-
-        #Checking for oddness
-        if (N % 2) ==0:
-            N = N
         else:
-            N = N + 1
+            #Sum of digits
+            N = int(str(sn)[0])+int(str(sn)[1])+int(str(sn)[2])
 
-        #Calculating Airfoil thicknesses
-        if N<=12:
-            N1 = N
-            N2 = int(N*2)
-        else:
-            N1 = int(N/2)
-            N2 = N
+            #Checking for oddness
+            if (N % 2) ==0:
+                N = N
+            else:
+                N = N + 1
+
+            #Calculating Airfoil thicknesses
+            if N<=12:
+                N1 = N
+                N2 = int(N*2)
+            else:
+                N1 = int(N/2)
+                N2 = N
 
 
-        #Determining NACA code
-        if N1 < 10:
-            N_1 = "naca000" + str(N1)
-        else:
-            N_1 = "naca00" + str(N1)
+            #Determining NACA code
+            if N1 < 10:
+                N_1 = "naca000" + str(N1)
+            else:
+                N_1 = "naca00" + str(N1)
 
-        if N2 < 10:
-            N_2 = "naca000" + str(N2)
-        else:
-            N_2 = "naca00" + str(N2)
-        NC = (N1, N2, N_1, N_2)
+            if N2 < 10:
+                N_2 = "naca000" + str(N2)
+            else:
+                N_2 = "naca00" + str(N2)
+            NC = (N1, N2, N_1, N_2)
         print()
-        print("Selected Airfoils:", N_1, "and",N_2)
+        print("Selected Airfoils:", NC[2], "and", NC[3])
         print()
         return NC
     else:

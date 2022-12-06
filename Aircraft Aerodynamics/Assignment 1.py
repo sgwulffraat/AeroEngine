@@ -8,7 +8,7 @@ from XFOIL import xfoil
 # %% INPUTS ##
 
 # Flight conditions parameters
-AoA = 15     #deg
+AoA = 5     #deg
 V_fs = 1    #m/s
 
 
@@ -25,30 +25,30 @@ AoAr = AoA * np.pi/180
 AF1 = import_airfoil(Naca[2])
 AF2 = import_airfoil(Naca[3])
 X1 = AF1[0]     # x coordinates of the first airfoil
-Y1 = -AF1[1]    # y coordinates of the first airfoil
+Y1 = AF1[1]    # y coordinates of the first airfoil
 X2 = AF2[0]     # x coordinates of the second airfoil
-Y2 = -AF2[1]    # y coordinates of the first airfoil
+Y2 = AF2[1]    # y coordinates of the first airfoil
 
 # Split airfoil into (U)pper and (L)ower
-X1_U = X1[Y1 >= 0]
-X1_L = X1[Y1 < 0]
-Y1_U = Y1[Y1 >= 0]
-Y1_L = Y1[Y1 < 0]
-
-X2_U = X2[Y2 >= 0]
-X2_L = X2[Y2 < 0]
-Y2_U = Y2[Y2 >= 0]
-Y2_L = Y2[Y2 < 0]
+# X1_U = X1[Y1 >= 0]
+# X1_L = X1[Y1 < 0]
+# Y1_U = Y1[Y1 >= 0]
+# Y1_L = Y1[Y1 < 0]
+#
+# X2_U = X2[Y2 >= 0]
+# X2_L = X2[Y2 < 0]
+# Y2_U = Y2[Y2 >= 0]
+# Y2_L = Y2[Y2 < 0]
 
 # Using DAT file to compute geometery parameters
-XC1, YC1, S1, phi1, beta1, N_pan1 = airfoil_geometery(X1, Y1, AoA)
-XC2, YC2, S2, phi2, beta2, N_pan2 = airfoil_geometery(X2, Y2, AoA)
-XC1U = XC1[YC1 >= 0]
-XC1L = XC1[YC1 < 0]
+XC1, YC1, S1, phi1, beta1, N_pan1, Xnew_1, Ynew_1 = airfoil_geometery(X1, Y1, AoA)
+XC2, YC2, S2, phi2, beta2, N_pan2, Xnew_2, Ynew_2 = airfoil_geometery(X2, Y2, AoA)
+# XC1U = XC1[YC1 >= 0]
+# XC1L = XC1[YC1 < 0]
 
 # Computing results using Vortex Panel and Source Panel methods drawn from [1]
-Cp1, Cl1, Cm1 = Cp_calculatorVPSP(X1, Y1, XC1, YC1, S1, phi1, beta1, V_fs, AoAr)
-Cp2, Cl2, Cm2 = Cp_calculatorVPSP(X2, Y2, XC2, YC2, S2, phi2, beta2, V_fs, AoAr)
+Cp1, Cl1, Cm1 = Cp_calculatorVPSP(Xnew_1, Ynew_1, XC1, YC1, S1, phi1, beta1, V_fs, AoAr)
+Cp2, Cl2, Cm2 = Cp_calculatorVPSP(Xnew_2, Ynew_2, XC2, YC2, S2, phi2, beta2, V_fs, AoAr)
 
 # %% XFOIL INTERGRATION ###
 
@@ -70,12 +70,12 @@ cl_polar1_xfoil = []
 cl_polar2_xfoil = []
 for i in alpha:
     i_r = i * np.pi/180
-    xc1, yc1, s1, phi_1, beta_1, N_pan_1 = airfoil_geometery(X1, Y1, i)
-    xc2, yc2, s2, phi_2, beta_2, N_pan_2 = airfoil_geometery(X2, Y2, i)
+    xc1, yc1, s1, phi_1, beta_1, N_pan_1, xnew1, ynew1 = airfoil_geometery(X1, Y1, i)
+    xc2, yc2, s2, phi_2, beta_2, N_pan_2, xnew2, ynew2 = airfoil_geometery(X2, Y2, i)
     cp_u_1, cp_l_1, x_u_1, x_l_1, cl_1 = xfoil(NACAcode1, i, Numnodes1)
     cp_u_2, cp_l_2, x_u_2, x_l_2, cl_2 = xfoil(NACAcode2, i, Numnodes2)
-    Cp_1, Cl_1, Cm_1 = Cp_calculatorVPSP(X1, Y1, XC1, YC1, S1, phi_1, beta_1, V_fs, i_r)
-    Cp_2, Cl_2, Cm_2 = Cp_calculatorVPSP(X2, Y2, XC2, YC2, S2, phi_2, beta_2, V_fs, i_r)
+    Cp_1, Cl_1, Cm_1 = Cp_calculatorVPSP(xnew1, ynew1, xc1, yc1, s1, phi_1, beta_1, V_fs, i_r)
+    Cp_2, Cl_2, Cm_2 = Cp_calculatorVPSP(xnew2, ynew2, xc2, yc2, s2, phi_2, beta_2, V_fs, i_r)
     cl_polar1.append(Cl_1)
     cl_polar2.append(Cl_2)
     cl_polar1_xfoil.append(cl_1)
@@ -100,19 +100,19 @@ gregory_cp_15 =np.loadtxt("CP_Gregory_alpha_15.dat", skiprows=1)
 
 
 
-# %% PLOTTING ###
+### %% PLOTTING ###
 
-# Plotting the paneled geometry
-# fig = plt.figure(1)
-# plt.plot(X1, Y1, color='orange', marker='o', markersize=3, label=Naca[2])
-# plt.plot(X2, Y2, color='blue', marker='o', markersize=3, label=Naca[3])
-# plt.plot(0, 0, color='w', label = "AoA = "+str(AoA)+"\N{DEGREE SIGN}")
-# plt.xlabel('X-Axis')
-# plt.ylabel('Y-Axis')
-# plt.title('Panel Geometry')
-# plt.axis('equal')
-# plt.legend()
-# plt.show()
+### Plotting the paneled geometry
+fig = plt.figure(1)
+plt.plot(X1, Y1, color='orange', marker='o', markersize=3, label=Naca[2])
+plt.plot(X2, Y2, color='blue', marker='o', markersize=3, label=Naca[3])
+plt.plot(0, 0, color='w', label = "AoA = "+str(AoA)+"\N{DEGREE SIGN}")
+plt.xlabel('X-Axis')
+plt.ylabel('Y-Axis')
+plt.title('Panel Geometry')
+plt.axis('equal')
+plt.legend()
+plt.show()
 
 # Plotting the pressure distribution Airfoil 1
 fig1 = plt.figure() # Airfoil middle point of VPM data
@@ -188,7 +188,7 @@ plt.show()
 
 # Plotting lift polar airfoil 1
 fig4 = plt.figure()
-if NACAcode1 == '0012':
+if NACAcode1 == '0012' and NACAcode2 != '4412':
     plt.plot(abbot_alpha, abbot_cl, label='Abbot', linestyle="", marker='o', markersize=3, color='red')
     plt.plot(gregory_alpha, gregory_cl, label='Gregory', linestyle="", marker='o', markersize=3, color='green')
 plt.plot(alpha, cl_polar1_xfoil, label='Xfoil', color='blue')

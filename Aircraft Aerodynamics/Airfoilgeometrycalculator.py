@@ -1,5 +1,6 @@
 import numpy as np
 import math as m
+import matplotlib.pyplot as plt
 
 def airfoil_geometery(Xdata, Ydata, AoA):
     # Number of panels
@@ -10,11 +11,15 @@ def airfoil_geometery(Xdata, Ydata, AoA):
     for i in range(N_pan):
         edge[i] = (Xdata[i+1]-Xdata[i])*(Ydata[i+1]+Ydata[i])
     sumEdge = np.sum(edge)
+    print("X data unflipped")
+    print(Xdata)
 
-    # If panels are CCW, flip them (don't if CW)
+    #If panels are CCW, flip them (don't if CW)
     if (sumEdge < 0):
         Xdata = np.flipud(Xdata)
         Ydata = np.flipud(Ydata)
+        print("X data flipped")
+        print(Xdata)
 
     #COMPUTE GEOMETRIC VARIABLES
 
@@ -32,13 +37,13 @@ def airfoil_geometery(Xdata, Ydata, AoA):
         dy = Ydata[i + 1] - Ydata[i]
         S[i] = (dx ** 2 + dy ** 2) ** 0.5
         phi[i] = m.atan2(dy, dx)
-        if (phi[i] < 0):
+        if phi[i] < 0:
             phi[i] = phi[i] + 2 * np.pi
 
     # Compute angle of panel normal w.r.t. horizontal and include AoA
     AoAr = AoA*np.pi/180
     delta = phi + (np.pi / 2)  # Panel normal angle [rad]
     beta = delta - (AoAr)  # Angle between freestream and panel normal [rad]
-    beta[beta > 2 * np.pi] = beta[beta > 2 * np.pi] - 2 * np.pi
+    #beta[beta > 2 * np.pi] = beta[beta > 2 * np.pi] - 2 * np.pi
 
-    return XC, YC, S, phi, beta, N_pan
+    return XC, YC, S, phi, beta, N_pan, Xdata, Ydata
