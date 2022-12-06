@@ -11,7 +11,7 @@
 
 ### Airfoil Parameter calculation ###
 def check_user_input(input):
-    if input == "Camber" or input == "Reference" or input == "Panels 1" or input == "Panels 2":
+    if input == "Camber" or input == "Reference" or input == "Panels":
         print("Entry confirmed.")
         return True
     elif len(input) != 3:
@@ -43,7 +43,10 @@ def Loop():
 
 def NACAcalculator(): #Ouput: (N1,N2)
     #Input
-    print("Enter first 3 digits of your student number: ...")
+    print("Enter 'Reference' for reference data plots")
+    print("Enter 'Camber' for camber comparison plots")
+    print("Enter 'Panels' for varying panel density plots")
+    print("Or enter the first 3 digits of your student number: ...")
     sn = input()
     if check_user_input(sn) == True:
         if sn == "Camber":
@@ -52,13 +55,9 @@ def NACAcalculator(): #Ouput: (N1,N2)
         elif sn == "Reference":
             flag = "Reference"
             NC = (12,12,"naca0012","naca0012", flag)
-        elif sn == "Panels 1":
-            flag = "Panels 1"
-            NC = (12,12,"naca0012","naca0012", flag)
-        elif sn == "Panels 2":
-            flag = "Panels 2"
-            NC = (12,12,"naca0012","naca0012", flag)
-
+        elif sn == "Panels":
+            flag = "Panels"
+            NC = (12,12,"naca0012_10","naca0012_20", flag)
         else:
             flag = "None"
             #Sum of digits
