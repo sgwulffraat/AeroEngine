@@ -57,7 +57,7 @@ Numnodes1 = N_pan1 + 1
 Cp1, Cl1, Cm1 = Cp_calculatorVPSP(Xnew_1, Ynew_1, XC1, YC1, S1, phi1, beta1, V_fs, AoAr)
 Cp2, Cl2, Cm2 = Cp_calculatorVPSP(Xnew_2, Ynew_2, XC2, YC2, S2, phi2, beta2, V_fs, AoAr)
 
-if flag2 == "None":
+if flag2 == "None" or flag1 == "Panels":
     AF3 = import_airfoil(Naca2[2])
     AF4 = import_airfoil(Naca2[3])
     X3 = AF3[0]     # x coordinates of the third airfoil
@@ -75,7 +75,7 @@ if flag2 == "None":
 alpha = [-10, 0, 10]
 cl_polar1 = []
 cl_polar2 = []
-if flag2 == "None":
+if flag2 == "None" or flag1 == "Panels":
     cl_polar3 = []
     cl_polar4 = []
 cl_polar1_xfoil = []
@@ -87,7 +87,7 @@ for i in alpha:
     Cp_2, Cl_2, Cm_2 = Cp_calculatorVPSP(xnew2, ynew2, xc2, yc2, s2, phi_2, beta_2, V_fs, i_r)
     cl_polar1.append(Cl_1)
     cl_polar2.append(Cl_2)
-    if flag2 == "None":
+    if flag2 == "None" or flag1 == "Panels":
         xc3, yc3, s3, phi_3, beta_3, N_pan_3, xnew3, ynew3 = airfoil_geometery(X3, Y3, i)
         xc4, yc4, s4, phi_4, beta_4, N_pan_4, xnew4, ynew4 = airfoil_geometery(X4, Y4, i)
         Cp_3, Cl_3, Cm_3 = Cp_calculatorVPSP(xnew3, ynew3, xc3, yc3, s3, phi_3, beta_3, V_fs, i_r)
@@ -95,7 +95,7 @@ for i in alpha:
         cl_polar3.append(Cl_3)
         cl_polar4.append(Cl_4)
 
-    if flag1 == "Panels":
+    if flag1 == "Panels" or flag1 == "Panels":
         cp_u_1, cp_l_1, x_u_1, x_l_1, cl_1 = xfoil(NACAcode1, i, 166)
     else:
         cp_u_1, cp_l_1, x_u_1, x_l_1, cl_1 = xfoil(NACAcode1, i, Numnodes1)
@@ -130,9 +130,10 @@ if flag1 != "Reference" and flag1 != "Panels":
     plt.plot(X1, Y1, color='orange', marker='o', markersize=3, label=Naca[2])
     if flag1 == "None":
         plt.plot(X3, Y3, color='blue', marker='o', markersize=3, label=Naca2[2])
-    plt.plot(X2, Y2, color='green', marker='o', markersize=3, label=Naca[3])
-    if flag1 == "None":
+        plt.plot(X2, Y2, color='green', marker='o', markersize=3, label=Naca[3])
         plt.plot(X4, Y4, color='red', marker='o', markersize=3, label=Naca2[3])
+    if flag1 == "Camber":
+        plt.plot(X2, Y2, color='blue', marker='o', markersize=3, label=Naca[3])
     plt.plot(0, 0, color='w', label = "AoA = "+str(AoA)+"\N{DEGREE SIGN}")
     plt.xlabel('X-Axis')
     plt.ylabel('Y-Axis')
