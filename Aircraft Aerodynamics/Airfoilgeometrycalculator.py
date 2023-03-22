@@ -1,6 +1,5 @@
 import numpy as np
 import math as m
-import matplotlib.pyplot as plt
 
 def airfoil_geometery(Xdata, Ydata, AoA):
     # Number of panels

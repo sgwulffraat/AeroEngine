@@ -2,20 +2,20 @@ import os
 import numpy as np
 
 
-def xfoil_id(filename):
+def xfoil_id(filename, re, n_crit, cl):
     # %% CREATE LOADING FILE
     # Knowns
-    re = "1.2E06"
-    CL = 0.4
+    CL = cl
     loadFlnmAF = filename
     saveFlnmAF = 'Save_Airfoil.txt'
     saveFlnmCp = 'Save_Cp.txt'
     xfoilFlnm = 'xfoil_input.txt'
     iter = "20"
+    ncrit = str(n_crit)
 
     # Delete files if they exist
-    if os.path.exists(saveFlnmAF):
-        os.remove(saveFlnmAF)
+    #if os.path.exists(saveFlnmAF):
+        #os.remove(saveFlnmAF)
 
     # Create the airfoil
     fid = open(xfoilFlnm, "w")
@@ -31,7 +31,10 @@ def xfoil_id(filename):
     fid.write("iter\n")
     fid.write(iter + "\n")
     fid.write("visc\n")
-    fid.write(re + "\n")
+    fid.write(str(re) + "\n")
+    if n_crit != 9:
+        fid.write("VPAR\n")
+        fid.write("n " + str(n_crit) + "\n\n")
     fid.write("cl \n")
     fid.write(str(CL)+ "\n")
     fid.write("CPWR " + saveFlnmCp + "\n")

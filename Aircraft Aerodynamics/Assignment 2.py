@@ -7,6 +7,7 @@ from XFOIL_ID import xfoil_id
 NACA = "2614"
 re = 1.2e06
 visc = "on"
+n_crit = 9
 
 # %% EXTRACTING DATA FROM X-FOIL %% #
 alpha = np.arange(-2, 9, 1)
@@ -27,9 +28,16 @@ for i in alpha:
         cf_a4 = cf_list
         x_a4 = x_list
 
-cp_org, x_org = xfoil_id(2614)
-cp_opt, x_opt = xfoil_id("Optimized_Airfoil.txt")
+# Part II
+cl_ii = 0.4
+cp_org, x_org = xfoil_id(2614, re, n_crit, cl_ii)
+cp_opt, x_opt = xfoil_id("Optimized_Airfoil.txt", re, n_crit, cl_ii)
 
+# Part III
+cp_list = []
+for R in [2E05, 4E05, 6E05]:
+    cp_re, x_nouse = xfoil_id(2614, R, 12, 0.7)
+    cp_list.append(cp_re)
 
 # %% PLOTTING %% #
 
@@ -74,6 +82,18 @@ plt.show()
 fig4 = plt.figure()
 plt.plot(x_org, cp_org, label='Original', color='tab:blue')
 plt.plot(x_opt, cp_opt, label='Optimized', color='tab:orange')
+plt.gca().invert_yaxis()
+plt.xlabel('Chordwise position (x/c)')
+plt.ylabel('Pressure coefficient (Cp)')
+plt.legend()
+plt.grid()
+plt.show()
+
+# Plotting cp distributions for different Re numbers
+fig5 = plt.figure()
+plt.plot(x_org, cp_list[0], label=r'$Re = 2,0*10^5$', color='tab:blue')
+plt.plot(x_org, cp_list[1], label=r'$Re = 4,0*10^5$', color='tab:orange')
+plt.plot(x_org, cp_list[2], label=r'$Re = 6,0*10^5$', color='tab:green')
 plt.gca().invert_yaxis()
 plt.xlabel('Chordwise position (x/c)')
 plt.ylabel('Pressure coefficient (Cp)')
