@@ -3,13 +3,22 @@ PSAV Save_Airfoil.txt
 y 
 OPER
 iter
-20
+30
 visc
-600000.0
+200000.0
 VPAR
 n 12
+xtr
+0.65
+1 
+ 
+Pacc 1 
+
 
 cl 
 0.7
 CPWR Save_Cp.txt
+y 
+PWRT
+Save_Pol.txt
 y 
