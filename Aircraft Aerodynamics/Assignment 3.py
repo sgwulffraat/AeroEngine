@@ -27,16 +27,33 @@ a_ref_30 = ref_30[:, 0]
 cl_ref_30 = ref_30[:, 1]
 
 #JavaFoil data
-jf_0_calcfoil = np.loadtxt("GAW_data/GAW2_0_calcfoil.txt", skiprows=5)
 jf_0_eppler = np.loadtxt("GAW_data/GAW2_0_eppler.txt", skiprows=5)
+jf_10_eppler = np.loadtxt("GAW_data/GAW2_10_eppler.txt", skiprows=5)
+jf_20_eppler = np.loadtxt("GAW_data/GAW2_20_eppler.txt", skiprows=5)
+jf_30_eppler = np.loadtxt("GAW_data/GAW2_30_eppler.txt", skiprows=5)
+
+jf_0_calcfoil = np.loadtxt("GAW_data/GAW2_0_calcfoil.txt", skiprows=5)
 jf_10_calcfoil = np.loadtxt("GAW_data/GAW2_10_calcfoil.txt", skiprows=5)
+jf_20_calcfoil = np.loadtxt("GAW_data/GAW2_20_calcfoil.txt", skiprows=5)
+jf_30_calcfoil = np.loadtxt("GAW_data/GAW2_30_calcfoil.txt", skiprows=5)
+
 a_jf_0_calc = jf_0_calcfoil[:, 0]
 cl_jf_0_calc = jf_0_calcfoil[:, 1]
-a_jf_0_eppler = jf_0_eppler[:, 0]
-cl_jf_0_eppler = jf_0_eppler[:, 1]
 a_jf_10_calc = jf_10_calcfoil[:, 0]
 cl_jf_10_calc = jf_10_calcfoil[:, 1]
+a_jf_20_calc = jf_20_calcfoil[:, 0]
+cl_jf_20_calc = jf_20_calcfoil[:, 1]
+a_jf_30_calc = jf_30_calcfoil[:, 0]
+cl_jf_30_calc = jf_30_calcfoil[:, 1]
 
+a_jf_0_eppler = jf_0_eppler[:, 0]
+cl_jf_0_eppler = jf_0_eppler[:, 1]
+a_jf_10_eppler = jf_0_eppler[:, 0]
+cl_jf_10_eppler = jf_0_eppler[:, 1]
+a_jf_20_eppler = jf_20_eppler[:, 0]
+cl_jf_20_eppler = jf_20_eppler[:, 1]
+a_jf_30_eppler = jf_30_eppler[:, 0]
+cl_jf_30_eppler = jf_30_eppler[:, 1]
 
 
 fig1, axes = plt.subplots()
@@ -52,12 +69,18 @@ plt.grid()
 plt.show()
 
 fig2 = plt.figure()
-plt.plot(a_ref_0, cl_ref_0, label='alpha = 0', color='tab:blue')
+plt.plot(a_ref_0, cl_ref_0, label='alpha = 0', color='black')
+plt.plot(a_ref_10, cl_ref_10, label='alpha = 10', color='black')
+plt.plot(a_ref_20, cl_ref_20, label='alpha = 10', color='black')
+plt.plot(a_ref_30, cl_ref_30, label='alpha = 30', color='black')
 plt.plot(a_jf_0_calc, cl_jf_0_calc, label='alpha = 0 (calc)', color='tab:red')
 plt.plot(a_jf_0_eppler, cl_jf_0_eppler, label='alpha = 0 (eppler)', color='tab:green')
-plt.plot(a_jf_10_calc, cl_jf_10_calc, label='alpha = 10 (calc)', color='tab:purple')
-plt.plot(a_ref_10, cl_ref_10, label='alpha = 10', color='black')
-# plt.plot(a_ref_30, cl_ref_30, label='alpha = 30', color='tab:orange')
+plt.plot(a_jf_10_calc, cl_jf_10_calc, label='alpha = 10 (calc)', color='tab:red')
+plt.plot(a_jf_10_eppler, cl_jf_10_eppler, label='alpha = 20 (eppler)', color='tab:green')
+plt.plot(a_jf_20_calc, cl_jf_20_calc, label='alpha = 20 (calc)', color='tab:red')
+plt.plot(a_jf_20_eppler, cl_jf_20_eppler, label='alpha = 20 (eppler)', color='tab:green')
+plt.plot(a_jf_30_calc, cl_jf_30_calc, label='alpha = 30 (calc)', color='tab:red')
+plt.plot(a_jf_30_eppler, cl_jf_30_eppler, label='alpha = 30 (eppler)', color='tab:green')
 plt.legend()
 plt.xlabel('Angle of attack ()[]')
 plt.ylabel('Lift (c_l) [-]')
